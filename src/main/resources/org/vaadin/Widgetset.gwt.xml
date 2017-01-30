@@ -3,6 +3,9 @@
 <module>
 	<!-- WS Compiler: manually edited -->
 	<inherits name="com.vaadin.DefaultWidgetSet" />
+
+	<!-- Widget styles in public -directory -->
+	<stylesheet src="autocomplete/styles.css"/>
 	
 	<set-configuration-property name="devModeRedirectEnabled" value="true" />
 	

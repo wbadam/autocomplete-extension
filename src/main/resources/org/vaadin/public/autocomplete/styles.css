@@ -1,0 +1,16 @@
+.autocomplete-suggestion-list {
+    position: absolute;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.autocomplete-suggestion-list-item {
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: white;
+}
+
+.autocomplete-suggestion-list-item.selected {
+    background-color: powderblue;
+}
