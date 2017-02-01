@@ -81,7 +81,6 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         textField.addKeyUpHandler(event -> {
             if (event.isDownArrow()) {
                 suggestionList.selectNextItem();
-
             } else if (event.isUpArrow()) {
                 suggestionList.selectPreviousItem();
             }
@@ -90,6 +89,9 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         textField.addKeyDownHandler(event -> {
             if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
                 suggestionList.hide();
+            } else if (event.isUpArrow()) {
+                // Prevent cursor from jumping to beginning of text
+                event.preventDefault();
             }
         });
 
