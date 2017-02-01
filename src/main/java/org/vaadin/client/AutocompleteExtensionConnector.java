@@ -1,18 +1,12 @@
 package org.vaadin.client;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import org.vaadin.AutocompleteExtension;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.UListElement;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
@@ -27,13 +21,6 @@ import com.vaadin.shared.ui.Connect;
 
 @Connect(AutocompleteExtension.class)
 public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
-
-    private static final String CLASS_SUGGESTION_LIST = "autocomplete-suggestion-list";
-    private static final String CLASS_SUGGESTION_LIST_ITEM = "autocomplete-suggestion-list-item";
-
-    private static final String CLASS_HIDDEN = "hidden";
-    private static final String CLASS_SELECTED = "selected";
-    private static final String CLASS_EMPTY = "empty";
 
     private final JavaScriptObject inputEventListener = createNativeFunction(
             this::onInput);
@@ -53,9 +40,7 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
                         suggestionList.fill(suggestions);
 
                         // Show and set width
-                        VTextField textField = ((TextFieldConnector) getParent())
-                                .getWidget();
-                        suggestionList.show(textField.getOffsetWidth(),
+                        suggestionList.show(getTextField().getOffsetWidth(),
                                 Style.Unit.PX);
                     }
                 });
@@ -64,7 +49,7 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
     @Override
     protected void extend(ServerConnector serverConnector) {
 
-        suggestionList.setSize(getState().suggestionListSize);
+        suggestionList.setMaxSize(getState().suggestionListSize);
 
         VTextField textField = getTextField();
 
@@ -80,9 +65,13 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         // Handle arrow key events
         textField.addKeyUpHandler(event -> {
             if (event.isDownArrow()) {
-                suggestionList.selectNextItem();
+                if (!suggestionList.isVisible()) {
+                    showSuggestionsFor(textField.getValue());
+                } else {
+                    selectNextItem();
+                }
             } else if (event.isUpArrow()) {
-                suggestionList.selectPreviousItem();
+                selectPreviousItem();
             }
         });
 
@@ -111,11 +100,43 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
     }
 
     private void onInput(Event event) {
-        String value = getTextField().getValue();
-        if (value.length() > 0) {
-            rpc.getSuggestion(value);
+        if (!getTextField().getValue().isEmpty()) {
+            showSuggestionsFor(getTextField().getValue());
         } else {
             suggestionList.hide();
+        }
+    }
+
+    private void showSuggestionsFor(String text) {
+        if (!text.isEmpty()) {
+            rpc.getSuggestion(text);
+        }
+    }
+
+    private void selectNextItem() {
+        if (suggestionList.getActualSize() > 0) {
+            int index = suggestionList.getSelectedIndex();
+
+            if (index < suggestionList.getActualSize() - 1) {
+                suggestionList.getItem(index + 1).select();
+            } else {
+                suggestionList.getItem(index).deselect();
+            }
+        }
+    }
+
+    private void selectPreviousItem() {
+        if (suggestionList.getActualSize() > 0) {
+            int index = suggestionList.getSelectedIndex();
+
+            if (index > 0) {
+                suggestionList.getItem(index - 1).select();
+            } else if (index == 0) {
+                suggestionList.getItem(index).deselect();
+            } else {
+                suggestionList.getItem(suggestionList.getActualSize() - 1)
+                        .select();
+            }
         }
     }
 
@@ -141,126 +162,12 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         super.onStateChanged(stateChangeEvent);
 
         if (stateChangeEvent.hasPropertyChanged("suggestionListSize")) {
-            suggestionList.setSize(getState().suggestionListSize);
+            suggestionList.setMaxSize(getState().suggestionListSize);
         }
     }
 
     @Override
     public AutocompleteExtensionState getState() {
         return (AutocompleteExtensionState) super.getState();
-    }
-
-    private class SuggestionList {
-        private final UListElement suggestionList = createList();
-        private final List<LIElement> suggestionListItems = new ArrayList<>();
-        private int selectedIndex = -1;
-        private boolean visible = false;
-        private int itemCount = 0;
-
-        private UListElement createList() {
-            UListElement ul = Document.get().createULElement();
-            ul.setClassName(CLASS_SUGGESTION_LIST);
-            return ul;
-        }
-
-        private LIElement createItem() {
-            LIElement li = Document.get().createLIElement();
-            li.setClassName(CLASS_SUGGESTION_LIST_ITEM);
-            return li;
-        }
-
-        public Element getElement() {
-            return this.suggestionList;
-        }
-
-        private List<LIElement> getItems() {
-            return this.suggestionListItems;
-        }
-
-        public void setSize(int newSize) {
-
-            // Add suggestion items if size increased
-            IntStream.range(getSize(), newSize).forEach(i -> {
-                LIElement li = createItem();
-                getItems().add(li);
-                getElement().appendChild(li);
-            });
-
-            // Remove suggestion elements if count decreased
-            IntStream.range(newSize, getSize()).forEach(i -> {
-                LIElement item = getItems().remove(i + 1);
-                item.removeFromParent();
-            });
-        }
-
-        public int getSize() {
-            return getItems().size();
-        }
-
-        public void show(double width, Style.Unit unit) {
-            visible = true;
-            getElement().getStyle().setWidth(width, unit);
-            getElement().removeClassName(CLASS_HIDDEN);
-        }
-
-        public void hide() {
-            visible = false;
-            getElement().addClassName(CLASS_HIDDEN);
-            selectedIndex = -1;
-        }
-
-        public boolean isVisible() {
-            return visible;
-        }
-
-        public void fill(List<String> suggestions) {
-            // Fill items
-            Iterator<LIElement> itemIterator = getItems().iterator();
-            suggestions.stream().limit(getSize())
-                    .forEach(suggestion -> {
-                        LIElement li = itemIterator.next();
-                        li.setInnerHTML(suggestion);
-                        li.removeClassName(CLASS_EMPTY);
-                    });
-
-            itemCount = getSize();
-
-            // Clear remaining slots
-            while (itemIterator.hasNext()) {
-                LIElement li = itemIterator.next();
-                li.setInnerHTML(null);
-                li.addClassName(CLASS_EMPTY);
-
-                itemCount--;
-            }
-        }
-
-        public void selectNextItem() {
-            if (isVisible()) {
-                unselectItem(selectedIndex);
-                selectedIndex = (selectedIndex + 2) % (itemCount + 1) - 1;
-                selectItem(selectedIndex);
-            }
-        }
-
-        public void selectPreviousItem() {
-            if (isVisible()) {
-                unselectItem(selectedIndex);
-                selectedIndex = Math.floorMod(selectedIndex, itemCount + 1) - 1;
-                selectItem(selectedIndex);
-            }
-        }
-
-        private void selectItem(int index) {
-            if (index > -1 && index < getSize()) {
-                getItems().get(index).addClassName(CLASS_SELECTED);
-            }
-        }
-
-        private void unselectItem(int index) {
-            if (index > -1 && index < getSize()) {
-                getItems().get(index).removeClassName(CLASS_SELECTED);
-            }
-        }
     }
 }
