@@ -13,6 +13,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.UListElement;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventListener;
@@ -83,6 +84,12 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
 
             } else if (event.isUpArrow()) {
                 suggestionList.selectPreviousItem();
+            }
+        });
+
+        textField.addKeyDownHandler(event -> {
+            if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
+                suggestionList.hide();
             }
         });
 
