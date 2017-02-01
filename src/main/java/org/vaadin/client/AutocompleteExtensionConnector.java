@@ -30,7 +30,9 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
     private static final String CLASS_SUGGESTION_LIST = "autocomplete-suggestion-list";
     private static final String CLASS_SUGGESTION_LIST_ITEM = "autocomplete-suggestion-list-item";
 
+    private static final String CLASS_HIDDEN = "hidden";
     private static final String CLASS_SELECTED = "selected";
+    private static final String CLASS_EMPTY = "empty";
 
     private final JavaScriptObject inputEventListener = createNativeFunction(
             this::onInput);
@@ -45,18 +47,9 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
                 new AutocompleteExtensionClientRpc() {
                     @Override
                     public void showSuggestions(List<String> suggestions) {
-                        // Fill items
-                        Iterator<LIElement> itemIterator = suggestionList
-                                .getItems().iterator();
-                        suggestions.stream().limit(suggestionList.getSize())
-                                .forEach(suggestion -> {
-                                    itemIterator.next()
-                                            .setInnerHTML(suggestion);
-                                });
 
-                        while (itemIterator.hasNext()) {
-                            itemIterator.next().setInnerHTML(null);
-                        }
+                        // Fill suggestion list with suggestions
+                        suggestionList.fill(suggestions);
 
                         // Show and set width
                         VTextField textField = ((TextFieldConnector) getParent())
@@ -113,8 +106,7 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         if (value.length() > 0) {
             rpc.getSuggestion(value);
         } else {
-            suggestionList.getItems().stream()
-                    .forEach(i -> i.setInnerHTML(null));
+            suggestionList.hide();
         }
     }
 
@@ -153,6 +145,8 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         private final UListElement suggestionList = createList();
         private final List<LIElement> suggestionListItems = new ArrayList<>();
         private int selectedIndex = -1;
+        private boolean visible = false;
+        private int itemCount = 0;
 
         private UListElement createList() {
             UListElement ul = Document.get().createULElement();
@@ -166,11 +160,11 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
             return li;
         }
 
-        public UListElement getElement() {
+        public Element getElement() {
             return this.suggestionList;
         }
 
-        public List<LIElement> getItems() {
+        private List<LIElement> getItems() {
             return this.suggestionListItems;
         }
 
@@ -195,22 +189,57 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         }
 
         public void show(double width, Style.Unit unit) {
-            Style listStyle = getElement().getStyle();
+            visible = true;
+            getElement().getStyle().setWidth(width, unit);
+            getElement().removeClassName(CLASS_HIDDEN);
+        }
 
-            listStyle.setWidth(width, unit);
-            listStyle.setVisibility(Style.Visibility.VISIBLE);
+        public void hide() {
+            visible = false;
+            getElement().addClassName(CLASS_HIDDEN);
+            selectedIndex = -1;
+        }
+
+        public boolean isVisible() {
+            return visible;
+        }
+
+        public void fill(List<String> suggestions) {
+            // Fill items
+            Iterator<LIElement> itemIterator = getItems().iterator();
+            suggestions.stream().limit(getSize())
+                    .forEach(suggestion -> {
+                        LIElement li = itemIterator.next();
+                        li.setInnerHTML(suggestion);
+                        li.removeClassName(CLASS_EMPTY);
+                    });
+
+            itemCount = getSize();
+
+            // Clear remaining slots
+            while (itemIterator.hasNext()) {
+                LIElement li = itemIterator.next();
+                li.setInnerHTML(null);
+                li.addClassName(CLASS_EMPTY);
+
+                itemCount--;
+            }
         }
 
         public void selectNextItem() {
-            unselectItem(selectedIndex);
-            selectedIndex = (selectedIndex + 2) % (getSize() + 1) - 1;
-            selectItem(selectedIndex);
+            if (isVisible()) {
+                unselectItem(selectedIndex);
+                selectedIndex = (selectedIndex + 2) % (itemCount + 1) - 1;
+                selectItem(selectedIndex);
+            }
         }
 
         public void selectPreviousItem() {
-            unselectItem(selectedIndex);
-            selectedIndex = Math.floorMod(selectedIndex, getSize() + 1) - 1;
-            selectItem(selectedIndex);
+            if (isVisible()) {
+                unselectItem(selectedIndex);
+                selectedIndex = Math.floorMod(selectedIndex, itemCount + 1) - 1;
+                selectItem(selectedIndex);
+            }
         }
 
         private void selectItem(int index) {

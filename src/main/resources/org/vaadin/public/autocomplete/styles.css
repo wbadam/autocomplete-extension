@@ -5,6 +5,10 @@
     margin: 0;
 }
 
+.autocomplete-suggestion-list.hidden {
+    visibility: hidden;
+}
+
 .autocomplete-suggestion-list-item {
     padding-left: 10px;
     padding-right: 10px;
@@ -13,4 +17,8 @@
 
 .autocomplete-suggestion-list-item.selected {
     background-color: powderblue;
+}
+
+.autocomplete-suggestion-list-item.empty {
+    visibility: hidden;
 }
