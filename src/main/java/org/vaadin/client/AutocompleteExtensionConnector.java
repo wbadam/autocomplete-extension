@@ -95,6 +95,8 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         });
 
         addEventListener(textField.getElement(), "input", inputEventListener);
+
+        textField.addBlurHandler(event -> suggestionList.hide());
     }
 
     @Override
