@@ -163,6 +163,15 @@ class SuggestionList {
     }
 
     /**
+     * Get selected item.
+     *
+     * @return Selected item or {@code null} if none selected.
+     */
+    public SuggestionItem getSelectedItem() {
+        return selectedItem;
+    }
+
+    /**
      * Represents an item in the suggestion list.
      */
     class SuggestionItem {

@@ -78,6 +78,16 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         textField.addKeyDownHandler(event -> {
             if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
                 suggestionList.hide();
+            } else if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER
+                    && suggestionList.getSelectedItem() != null) {
+                // Fill textfield with suggested content
+                textField.setValue(
+                        suggestionList.getSelectedItem().getContent());
+                // Hide suggestion list
+                suggestionList.hide();
+                // Prevent handler added to text field from handling when suggestion list was open
+                // TODO: 03/02/2017 Test if works as intended
+                event.preventDefault();
             } else if (event.isUpArrow()) {
                 // Prevent cursor from jumping to beginning of text
                 event.preventDefault();
