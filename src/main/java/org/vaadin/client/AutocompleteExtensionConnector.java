@@ -3,14 +3,14 @@ package org.vaadin.client;
 import java.util.List;
 
 import org.vaadin.AutocompleteExtension;
+import org.vaadin.client.jsinterop.JsElement;
+import org.vaadin.client.jsinterop.JsEventListener;
 
-import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.EventListener;
 import com.vaadin.client.ServerConnector;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.communication.StateChangeEvent;
@@ -22,8 +22,7 @@ import com.vaadin.shared.ui.Connect;
 @Connect(AutocompleteExtension.class)
 public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
 
-    private final JavaScriptObject inputEventListener = createNativeFunction(
-            this::onInput);
+    private final JsEventListener onInput = this::onInput;
 
     private final SuggestionList suggestionList = new SuggestionList();
 
@@ -94,7 +93,9 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
             }
         });
 
-        addEventListener(textField.getElement(), "input", inputEventListener);
+        // Add listener for input event
+        ((JsElement) textField.getElement().cast())
+                .addEventListener(BrowserEvents.INPUT, onInput);
 
         textField.addBlurHandler(event -> suggestionList.hide());
     }
@@ -103,8 +104,9 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
     public void onUnregister() {
         super.onUnregister();
 
-        removeEventListener(getTextField().getElement(), "input",
-                inputEventListener);
+        // Remove input event listener
+        ((JsElement) getTextField().getElement().cast())
+                .removeEventListener(BrowserEvents.INPUT, onInput);
     }
 
     private VTextField getTextField() {
@@ -151,23 +153,6 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
             }
         }
     }
-
-    private native void addEventListener(Element element, String eventName,
-            JavaScriptObject listenerFunction)/*-{
-        element.addEventListener(eventName, listenerFunction, false);
-    }-*/;
-
-    private native void removeEventListener(Element element, String eventName,
-            JavaScriptObject listener)/*-{
-        element.removeEventListener(eventName, listener, false);
-    }-*/;
-
-    private native JavaScriptObject createNativeFunction(
-            EventListener listener)/*-{
-        return $entry(function (event) {
-            listener.@com.google.gwt.user.client.EventListener::onBrowserEvent(*)(event);
-        });
-    }-*/;
 
     @Override
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
