@@ -2,6 +2,8 @@ package org.vaadin;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.vaadin.client.AutocompleteExtensionClientRpc;
 import org.vaadin.client.AutocompleteExtensionServerRpc;
@@ -10,18 +12,24 @@ import org.vaadin.client.AutocompleteExtensionState;
 import com.vaadin.server.AbstractExtension;
 import com.vaadin.ui.TextField;
 
-public class AutocompleteExtension extends AbstractExtension {
+public class AutocompleteExtension<T> extends AbstractExtension {
 
-    private SuggestionGenerator suggestionGenerator;
+    private SuggestionGenerator<T> suggestionGenerator;
+    private CaptionGenerator<T> captionGenerator;
 
     private AutocompleteExtensionServerRpc rpc = query -> {
 
-        List<String> suggestionList = suggestionGenerator
-                .generateSuggestions(query, getState().suggestionListSize);
+        // TODO: 04/02/2017 Register RPC only when generator set
+        Optional.ofNullable(suggestionGenerator).ifPresent(generator -> {
+            List<T> suggestions = generator
+                    .apply(query, getState().suggestionListSize);
 
-        // Send result back
-        getRpcProxy(AutocompleteExtensionClientRpc.class)
-                .showSuggestions(suggestionList);
+            // Send results back
+            getRpcProxy(AutocompleteExtensionClientRpc.class).showSuggestions(
+                    suggestions.stream()
+                            .map(s -> captionGenerator.apply(s, query))
+                            .collect(Collectors.toList()));
+        });
     };
 
     public AutocompleteExtension() {
@@ -32,8 +40,16 @@ public class AutocompleteExtension extends AbstractExtension {
         super.extend(textField);
     }
 
-    public void setSuggestionGenerator(SuggestionGenerator generator) {
-        this.suggestionGenerator = generator;
+    public void setSuggestionGenerator(
+            SuggestionGenerator<T> suggestionGenerator) {
+        setSuggestionGenerator(suggestionGenerator, null);
+    }
+
+    public void setSuggestionGenerator(
+            SuggestionGenerator<T> suggestionGenerator,
+            CaptionGenerator<T> captionGenerator) {
+        this.suggestionGenerator = suggestionGenerator;
+        this.captionGenerator = captionGenerator;
     }
 
     /**
