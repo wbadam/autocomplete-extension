@@ -1,16 +1,18 @@
 package org.vaadin.client;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.vaadin.AutocompleteExtension;
-import org.vaadin.client.jsinterop.JsEventTarget;
 import org.vaadin.client.jsinterop.JsEventListener;
+import org.vaadin.client.jsinterop.JsEventTarget;
 
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Timer;
 import com.vaadin.client.ServerConnector;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.communication.StateChangeEvent;
@@ -22,12 +24,42 @@ import com.vaadin.shared.ui.Connect;
 @Connect(AutocompleteExtension.class)
 public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
 
+    /**
+     * Timer for delaying server RPCs for requesting suggestion items.
+     */
+    private static class SuggestionTimer extends Timer {
+        private final AutocompleteExtensionServerRpc rpc;
+        private String query;
+
+        SuggestionTimer(AutocompleteExtensionServerRpc rpc) {
+            this.rpc = rpc;
+        }
+
+        @Override
+        public void run() {
+            rpc.getSuggestion(query);
+        }
+
+        /**
+         * Schedule calling autocomplete RPC.
+         *
+         * @param query
+         * @param delayMillis
+         */
+        void schedule(String query, int delayMillis) {
+            this.query = query;
+            schedule(delayMillis);
+        }
+    }
+
     private final JsEventListener onInput = this::onInput;
 
     private final SuggestionList suggestionList = new SuggestionList();
 
-    private AutocompleteExtensionServerRpc rpc = RpcProxy
+    private final AutocompleteExtensionServerRpc rpc = RpcProxy
             .create(AutocompleteExtensionServerRpc.class, this);
+
+    private final SuggestionTimer suggestionTimer = new SuggestionTimer(rpc);
 
     public AutocompleteExtensionConnector() {
         registerRpc(AutocompleteExtensionClientRpc.class,
@@ -123,15 +155,22 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
 
     private void onInput(Event event) {
         if (!getTextField().getValue().isEmpty()) {
-            showSuggestionsFor(getTextField().getValue());
+            showSuggestionsFor(getTextField().getValue(),
+                    getState().suggestionDelay);
         } else {
             suggestionList.hide();
         }
     }
 
     private void showSuggestionsFor(String text) {
-        if (!text.isEmpty()) {
-            rpc.getSuggestion(text);
+        showSuggestionsFor(text, 0);
+    }
+
+    private void showSuggestionsFor(String text, int delayMillis) {
+        if (Objects.nonNull(text) && !text.isEmpty()) {
+            suggestionTimer.schedule(text, delayMillis);
+        } else {
+            suggestionTimer.cancel();
         }
     }
 

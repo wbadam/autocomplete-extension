@@ -1,6 +1,7 @@
 package org.vaadin;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.vaadin.client.AutocompleteExtensionClientRpc;
 import org.vaadin.client.AutocompleteExtensionServerRpc;
@@ -33,6 +34,26 @@ public class AutocompleteExtension extends AbstractExtension {
 
     public void setSuggestionGenerator(SuggestionGenerator generator) {
         this.suggestionGenerator = generator;
+    }
+
+    /**
+     * Delay server callback for suggestions {@code delayMillis} milliseconds.
+     *
+     * @param delayMillis
+     *         Delay in milliseconds. Must not be negative.
+     */
+    public void setSuggestionDelay(int delayMillis) {
+        if (delayMillis < 0) {
+            throw new IllegalArgumentException("Delay must be positive.");
+        }
+
+        if (!Objects.equals(getState(false).suggestionDelay, delayMillis)) {
+            getState().suggestionDelay = delayMillis;
+        }
+    }
+
+    public int getSuggestionDelay() {
+        return getState(false).suggestionDelay;
     }
 
     @Override
