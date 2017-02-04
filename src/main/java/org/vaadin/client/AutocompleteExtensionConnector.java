@@ -3,7 +3,7 @@ package org.vaadin.client;
 import java.util.List;
 
 import org.vaadin.AutocompleteExtension;
-import org.vaadin.client.jsinterop.JsElement;
+import org.vaadin.client.jsinterop.JsEventTarget;
 import org.vaadin.client.jsinterop.JsEventListener;
 
 import com.google.gwt.dom.client.BrowserEvents;
@@ -79,11 +79,7 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
                 suggestionList.hide();
             } else if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER
                     && suggestionList.getSelectedItem() != null) {
-                // Fill textfield with suggested content
-                textField.setValue(
-                        suggestionList.getSelectedItem().getContent());
-                // Hide suggestion list
-                suggestionList.hide();
+                onSuggestionSelected();
                 // Prevent handler added to text field from handling when suggestion list was open
                 // TODO: 03/02/2017 Test if works as intended
                 event.preventDefault();
@@ -94,10 +90,22 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         });
 
         // Add listener for input event
-        ((JsElement) textField.getElement().cast())
+        ((JsEventTarget) textField.getElement())
                 .addEventListener(BrowserEvents.INPUT, onInput);
 
+        // Hide suggestion list when field looses focus
         textField.addBlurHandler(event -> suggestionList.hide());
+
+        // Register suggestion click listener
+        suggestionList.setItemClickHandler(this::onSuggestionSelected);
+    }
+
+    private void onSuggestionSelected() {
+        // Fill textfield with suggested content
+        getTextField().setValue(suggestionList.getSelectedItem().getContent());
+
+        // Hide suggestion list
+        suggestionList.hide();
     }
 
     @Override
@@ -105,7 +113,7 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         super.onUnregister();
 
         // Remove input event listener
-        ((JsElement) getTextField().getElement().cast())
+        ((JsEventTarget) getTextField().getElement())
                 .removeEventListener(BrowserEvents.INPUT, onInput);
     }
 

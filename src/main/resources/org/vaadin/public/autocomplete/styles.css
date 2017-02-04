@@ -15,7 +15,7 @@
     background-color: white;
 }
 
-.autocomplete-suggestion-list-item.selected {
+.autocomplete-suggestion-list-item.selected, .autocomplete-suggestion-list-item:hover {
     background-color: powderblue;
 }
 

@@ -6,11 +6,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
+import org.vaadin.client.jsinterop.JsEventTarget;
+import org.vaadin.client.jsinterop.JsEventListener;
+
+import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.UListElement;
+import com.google.gwt.user.client.Event;
 
 /**
  * Represents a suggestion list.
@@ -43,6 +48,11 @@ class SuggestionList {
      * Stores suggestion list visibility.
      */
     private boolean visible = false;
+
+    /**
+     * Callback function for item click event
+     */
+    private Runnable itemClickHandler;
 
     private UListElement createList() {
         UListElement ul = Document.get().createULElement();
@@ -86,11 +96,11 @@ class SuggestionList {
 
     private void addItem(SuggestionItem item) {
         items.add(item);
-        ul.appendChild(item.li);
+        item.addToParent(ul);
     }
 
     private void removeItem(int index) {
-        items.remove(index).li.removeFromParent();
+        items.remove(index).removeFromParent();
     }
 
     /**
@@ -172,6 +182,16 @@ class SuggestionList {
     }
 
     /**
+     * Set callback function for click event on a selection list item.
+     *
+     * @param handler
+     *         Function to be called when click event happens.
+     */
+    public void setItemClickHandler(Runnable handler) {
+        itemClickHandler = handler;
+    }
+
+    /**
      * Represents an item in the suggestion list.
      */
     class SuggestionItem {
@@ -181,6 +201,16 @@ class SuggestionList {
          */
         private final LIElement li = createItem();
 
+        /**
+         * Mouse down callback.
+         */
+        private JsEventListener onMouseDown = this::onMouseDown;
+
+        /**
+         * On click callback.
+         */
+        private JsEventListener onClick = this::onClick;
+
         private SuggestionItem() {
             setContent(null);
         }
@@ -189,6 +219,39 @@ class SuggestionList {
             LIElement li = Document.get().createLIElement();
             li.setClassName(CLASS_SUGGESTION_LIST_ITEM);
             return li;
+        }
+
+        private void addToParent(Element parent) {
+            // Set parent element
+            parent.appendChild(this.li);
+
+            // Register event listeners
+            JsEventTarget li = (JsEventTarget) this.li;
+            li.addEventListener(BrowserEvents.MOUSEDOWN, onMouseDown);
+            li.addEventListener(BrowserEvents.CLICK, onClick);
+        }
+
+        private void removeFromParent() {
+            // Unregister event listeners
+            JsEventTarget li = (JsEventTarget) this.li;
+            li.removeEventListener(BrowserEvents.MOUSEDOWN, onMouseDown);
+            li.removeEventListener(BrowserEvents.CLICK, onClick);
+
+            // Remove from parent
+            this.li.removeFromParent();
+        }
+
+        private void onMouseDown(Event event) {
+            // Prevent blur on text field before click
+            event.preventDefault();
+        }
+
+        private void onClick(Event event) {
+            // Set selection on current item
+            select();
+
+            // Call selection click handler
+            Optional.ofNullable(itemClickHandler).ifPresent(Runnable::run);
         }
 
         /**

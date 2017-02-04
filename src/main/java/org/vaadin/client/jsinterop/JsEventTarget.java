@@ -6,8 +6,8 @@ import jsinterop.annotations.JsType;
 /**
  * JS Interop interface for adding/removing event listener to/from Element.
  */
-@JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Element")
-public interface JsElement {
+@JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "EventTarget")
+public interface JsEventTarget {
 
     /**
      * Add listener for {@code eventType} event. Store {@code listener}

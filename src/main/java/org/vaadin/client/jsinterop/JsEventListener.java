@@ -5,7 +5,7 @@ import com.google.gwt.user.client.Event;
 import jsinterop.annotations.JsFunction;
 
 /**
- * JS Interop event listener to be added to {@link JsElement}.
+ * JS Interop event listener to be added to {@link JsEventTarget}.
  */
 @JsFunction
 public interface JsEventListener {
