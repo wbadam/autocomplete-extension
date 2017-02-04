@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.vaadin.client.AutocompleteExtensionClientRpc;
 import org.vaadin.client.AutocompleteExtensionServerRpc;
 import org.vaadin.client.AutocompleteExtensionState;
+import org.vaadin.client.SuggestionData;
 
 import com.vaadin.server.AbstractExtension;
 import com.vaadin.ui.TextField;
@@ -15,19 +16,33 @@ import com.vaadin.ui.TextField;
 public class AutocompleteExtension<T> extends AbstractExtension {
 
     private SuggestionGenerator<T> suggestionGenerator;
-    private CaptionGenerator<T> captionGenerator;
+    private SuggestionCaptionConverter<T> captionConverter;
+    private SuggestionValueConverter<T> valueConverter;
+
+    private final SuggestionCaptionConverter<T> defaultCaptionConverter = (s, q) -> s
+            .toString();
+    private final SuggestionValueConverter<T> defaultValueConverter = T::toString;
 
     private AutocompleteExtensionServerRpc rpc = query -> {
 
         // TODO: 04/02/2017 Register RPC only when generator set
         Optional.ofNullable(suggestionGenerator).ifPresent(generator -> {
+            // Generate suggestion list
             List<T> suggestions = generator
                     .apply(query, getState().suggestionListSize);
 
-            // Send results back
-            getRpcProxy(AutocompleteExtensionClientRpc.class).showSuggestions(
-                    suggestions.stream()
-                            .map(s -> captionGenerator.apply(s, query))
+            // Get converters
+            SuggestionCaptionConverter<T> cConverter = Optional
+                    .ofNullable(captionConverter)
+                    .orElse(defaultCaptionConverter);
+            SuggestionValueConverter<T> vConverter = Optional
+                    .ofNullable(valueConverter).orElse(defaultValueConverter);
+
+            // Create a list of suggestion data and send it to the client
+            getRpcProxy(AutocompleteExtensionClientRpc.class)
+                    .showSuggestions(suggestions.stream()
+                            .map(s -> new SuggestionData(vConverter.apply(s),
+                                    cConverter.apply(s, query)))
                             .collect(Collectors.toList()));
         });
     };
@@ -42,14 +57,16 @@ public class AutocompleteExtension<T> extends AbstractExtension {
 
     public void setSuggestionGenerator(
             SuggestionGenerator<T> suggestionGenerator) {
-        setSuggestionGenerator(suggestionGenerator, null);
+        setSuggestionGenerator(suggestionGenerator, null, null);
     }
 
     public void setSuggestionGenerator(
             SuggestionGenerator<T> suggestionGenerator,
-            CaptionGenerator<T> captionGenerator) {
+            SuggestionValueConverter valueConverter,
+            SuggestionCaptionConverter<T> captionConverter) {
         this.suggestionGenerator = suggestionGenerator;
-        this.captionGenerator = captionGenerator;
+        this.valueConverter = valueConverter;
+        this.captionConverter = captionConverter;
     }
 
     /**

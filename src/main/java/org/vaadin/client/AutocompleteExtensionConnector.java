@@ -1,6 +1,5 @@
 package org.vaadin.client;
 
-import java.util.List;
 import java.util.Objects;
 
 import org.vaadin.AutocompleteExtension;
@@ -62,19 +61,13 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
     private final SuggestionTimer suggestionTimer = new SuggestionTimer(rpc);
 
     public AutocompleteExtensionConnector() {
-        registerRpc(AutocompleteExtensionClientRpc.class,
-                new AutocompleteExtensionClientRpc() {
-                    @Override
-                    public void showSuggestions(List<String> suggestions) {
+        registerRpc(AutocompleteExtensionClientRpc.class, (suggestions -> {
+            // Fill suggestion list with captions
+            suggestionList.fill(suggestions);
 
-                        // Fill suggestion list with suggestions
-                        suggestionList.fill(suggestions);
-
-                        // Show and set width
-                        suggestionList.show(getTextField().getOffsetWidth(),
-                                Style.Unit.PX);
-                    }
-                });
+            // Show and set width
+            suggestionList.show(getTextField().getOffsetWidth(), Style.Unit.PX);
+        }));
     }
 
     @Override
@@ -134,7 +127,7 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
 
     private void onSuggestionSelected() {
         // Fill textfield with suggested content
-        getTextField().setValue(suggestionList.getSelectedItem().getContent());
+        getTextField().setValue(suggestionList.getSelectedItem().getValue());
 
         // Hide suggestion list
         suggestionList.hide();

@@ -6,5 +6,5 @@ import com.vaadin.shared.communication.ClientRpc;
 
 public interface AutocompleteExtensionClientRpc extends ClientRpc {
 
-    public void showSuggestions(List<String> suggestions);
+    public void showSuggestions(List<SuggestionData> suggestions);
 }

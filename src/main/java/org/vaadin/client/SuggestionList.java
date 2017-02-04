@@ -107,16 +107,19 @@ class SuggestionList {
      * Set content of suggestion items.
      *
      * @param suggestions
-     *         List of suggestions in HTML format.
+     *         List of suggestion data.
      */
-    public void fill(List<String> suggestions) {
+    public void fill(List<SuggestionData> suggestions) {
         // Fill items
         Iterator<SuggestionItem> itemIterator = items.iterator();
         suggestions.stream().limit(items.size()).forEach(
-                suggestion -> itemIterator.next().setContent(suggestion));
+                suggestion -> itemIterator.next()
+                        .setContent(suggestion.getValue(),
+                                suggestion.getCaption()));
 
+        // Clear the rest of the items
         while (itemIterator.hasNext()) {
-            itemIterator.next().setContent(null);
+            itemIterator.next().clear();
         }
     }
 
@@ -211,8 +214,14 @@ class SuggestionList {
          */
         private JsEventListener onClick = this::onClick;
 
+        /**
+         * Value of this suggestion item. This will be set for text field when
+         * selected
+         */
+        private String value;
+
         private SuggestionItem() {
-            setContent(null);
+            setContent(null, null);
         }
 
         private LIElement createItem() {
@@ -277,16 +286,19 @@ class SuggestionList {
         }
 
         /**
-         * Set content of this item as HTML.
+         * Set content for this item.
          *
-         * @param html
-         *         Content to be set.
+         * @param value
+         *         Value to be set for text field when selected.
+         * @param caption
+         *         HTML caption to display as the visible content.
          */
-        public void setContent(String html) {
-            this.li.setInnerHTML(html);
+        public void setContent(String value, String caption) {
+            this.li.setInnerHTML(caption);
+            this.value = value;
 
-            // Set 'empty' class name
-            if (html == null || html.isEmpty()) {
+            // Add or remove 'empty' class name
+            if (isEmpty()) {
                 this.li.addClassName(CLASS_EMPTY);
             } else {
                 this.li.removeClassName(CLASS_EMPTY);
@@ -294,22 +306,40 @@ class SuggestionList {
         }
 
         /**
-         * Returns content of this item as HTML.
+         * Returns caption of this item as HTML.
          *
-         * @return Content of this item as HTML.
+         * @return Visible caption of this item as HTML.
          */
-        public String getContent() {
+        public String getCaption() {
             return this.li.getInnerHTML();
+        }
+
+        /**
+         * Returns the value of this item to be set for the text field when the
+         * item is selected
+         *
+         * @return Value of this item.
+         */
+        public String getValue() {
+            return this.value;
+        }
+
+        /**
+         * Clear this item. Removes caption and value.
+         */
+        public void clear() {
+            setContent(null, null);
         }
 
         /**
          * Tells if this item is empty.
          *
-         * @return {@code true} if content is null or empty string, {@code
-         * false} otherwise.
+         * @return {@code true} if content or value is null or empty string,
+         * {@code false} otherwise.
          */
         public boolean isEmpty() {
-            return getContent() == null || getContent().isEmpty();
+            return (getCaption() == null || getCaption().isEmpty()) && (
+                    value == null || value.isEmpty());
         }
     }
 }
