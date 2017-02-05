@@ -43,7 +43,7 @@ public class AutocompleteExtension<T> extends AbstractExtension {
                     .showSuggestions(suggestions.stream()
                             .map(s -> new SuggestionData(vConverter.apply(s),
                                     cConverter.apply(s, query)))
-                            .collect(Collectors.toList()));
+                            .collect(Collectors.toList()), query);
         });
     };
 

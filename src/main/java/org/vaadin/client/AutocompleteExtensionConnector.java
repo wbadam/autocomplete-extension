@@ -61,13 +61,18 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
     private final SuggestionTimer suggestionTimer = new SuggestionTimer(rpc);
 
     public AutocompleteExtensionConnector() {
-        registerRpc(AutocompleteExtensionClientRpc.class, (suggestions -> {
-            // Fill suggestion list with captions
-            suggestionList.fill(suggestions);
+        registerRpc(AutocompleteExtensionClientRpc.class,
+                (suggestions, query) -> {
+                    // Make sure that the received suggestions are not outdated
+                    if (Objects.equals(query, getTextField().getValue())) {
+                        // Fill suggestion list with captions
+                        suggestionList.fill(suggestions);
 
-            // Show and set width
-            suggestionList.show(getTextField().getOffsetWidth(), Style.Unit.PX);
-        }));
+                        // Show and set width
+                        suggestionList.show(getTextField().getOffsetWidth(),
+                                Style.Unit.PX);
+                    }
+                });
     }
 
     @Override
