@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.TextField;
@@ -25,7 +26,7 @@ public class BasicMyComponentUsageUI extends AbstractTest {
 
         autocompleteExtension.setSuggestionGenerator(this::suggest, null,
                 (planet, query) -> {
-                    StringBuffer r = new StringBuffer();
+                    SafeHtmlBuilder r = new SafeHtmlBuilder();
 
                     query = query.toLowerCase();
 
@@ -34,16 +35,18 @@ public class BasicMyComponentUsageUI extends AbstractTest {
                     int iEnd = iStart + query.length();
 
                     if (iStart >= 0) {
-                        r.append(planet.getName().substring(0, iStart));
-                        r.append("<b>");
-                        r.append(planet.getName().substring(iStart, iEnd));
-                        r.append("</b>");
-                        r.append(planet.getName().substring(iEnd, n.length()));
+                        r.appendEscaped(planet.getName().substring(0, iStart));
+                        r.appendHtmlConstant("<b>");
+                        r.appendEscaped(
+                                planet.getName().substring(iStart, iEnd));
+                        r.appendHtmlConstant("</b>");
+                        r.appendEscaped(
+                                planet.getName().substring(iEnd, n.length()));
                     } else {
-                        r.append(planet.getName());
+                        r.appendEscaped(planet.getName());
                     }
 
-                    return r.toString();
+                    return r.toSafeHtml();
                 });
 
         layout.addComponent(textField);

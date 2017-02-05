@@ -10,6 +10,7 @@ import org.vaadin.client.AutocompleteExtensionServerRpc;
 import org.vaadin.client.AutocompleteExtensionState;
 import org.vaadin.client.SuggestionData;
 
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.vaadin.server.AbstractExtension;
 import com.vaadin.ui.TextField;
 
@@ -19,8 +20,8 @@ public class AutocompleteExtension<T> extends AbstractExtension {
     private SuggestionCaptionConverter<T> captionConverter;
     private SuggestionValueConverter<T> valueConverter;
 
-    private final SuggestionCaptionConverter<T> defaultCaptionConverter = (s, q) -> s
-            .toString();
+    private final SuggestionCaptionConverter<T> defaultCaptionConverter =
+            (s, q) -> SafeHtmlUtils.fromString(s.toString());
     private final SuggestionValueConverter<T> defaultValueConverter = T::toString;
 
     private AutocompleteExtensionServerRpc rpc = query -> {
@@ -42,7 +43,7 @@ public class AutocompleteExtension<T> extends AbstractExtension {
             getRpcProxy(AutocompleteExtensionClientRpc.class)
                     .showSuggestions(suggestions.stream()
                             .map(s -> new SuggestionData(vConverter.apply(s),
-                                    cConverter.apply(s, query)))
+                                    cConverter.apply(s, query).asString()))
                             .collect(Collectors.toList()), query);
         });
     };
@@ -62,7 +63,7 @@ public class AutocompleteExtension<T> extends AbstractExtension {
 
     public void setSuggestionGenerator(
             SuggestionGenerator<T> suggestionGenerator,
-            SuggestionValueConverter valueConverter,
+            SuggestionValueConverter<T> valueConverter,
             SuggestionCaptionConverter<T> captionConverter) {
         this.suggestionGenerator = suggestionGenerator;
         this.valueConverter = valueConverter;

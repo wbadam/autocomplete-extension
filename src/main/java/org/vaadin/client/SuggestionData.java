@@ -2,6 +2,8 @@ package org.vaadin.client;
 
 import java.io.Serializable;
 
+import com.google.gwt.safehtml.shared.annotations.IsSafeHtml;
+
 /**
  * Stores data for a suggestion item for server-client communication.
  */
@@ -15,9 +17,9 @@ public class SuggestionData implements Serializable {
 
     /**
      * Caption of a suggestion item. This is visible for the user when
-     * suggestion list is shown. Can contain HTML.
+     * suggestion list is shown. Contains safe HTML.
      */
-    private String caption;
+    private @IsSafeHtml String caption;
 
     public SuggestionData() {
     }

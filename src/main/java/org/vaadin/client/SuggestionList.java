@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-import org.vaadin.client.jsinterop.JsEventTarget;
 import org.vaadin.client.jsinterop.JsEventListener;
+import org.vaadin.client.jsinterop.JsEventTarget;
 
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Document;
@@ -15,6 +15,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.UListElement;
+import com.google.gwt.safehtml.shared.annotations.IsSafeHtml;
 import com.google.gwt.user.client.Event;
 
 /**
@@ -291,9 +292,9 @@ class SuggestionList {
          * @param value
          *         Value to be set for text field when selected.
          * @param caption
-         *         HTML caption to display as the visible content.
+         *         Safe HTML caption to be displayed as the visible content.
          */
-        public void setContent(String value, String caption) {
+        public void setContent(String value, @IsSafeHtml String caption) {
             this.li.setInnerHTML(caption);
             this.value = value;
 
