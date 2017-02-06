@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.vaadin.addonhelpers.AbstractTest;
+
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-
-import org.vaadin.addonhelpers.AbstractTest;
 
 public class BasicMyComponentUsageUI extends AbstractTest {
 
@@ -21,8 +21,8 @@ public class BasicMyComponentUsageUI extends AbstractTest {
 
         TextField textField = new TextField();
 
-        AutocompleteExtension<Planet> autocompleteExtension = new AutocompleteExtension<>();
-        autocompleteExtension.extend(textField);
+        AutocompleteExtension<Planet> autocompleteExtension = new AutocompleteExtension<>(
+                textField);
 
         autocompleteExtension.setSuggestionGenerator(this::suggest, null,
                 (planet, query) -> {
