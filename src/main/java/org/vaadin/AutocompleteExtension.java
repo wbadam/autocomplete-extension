@@ -48,11 +48,9 @@ public class AutocompleteExtension<T> extends AbstractExtension {
         });
     };
 
-    public AutocompleteExtension() {
+    public AutocompleteExtension(TextField textField) {
         registerRpc(rpc);
-    }
 
-    public void extend(TextField textField) {
         super.extend(textField);
     }
 
