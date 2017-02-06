@@ -17,29 +17,41 @@ public interface SuggestionCaptionConverter<T> extends
 
     /**
      * Converter method. Parameters are the suggestion data object and the user
-     * query. The method should return the text that should be displayed for the
+     * query. The method should return the text that will be displayed for the
      * user as suggestion.
      * <p>
-     * Example 1 returns the query in bold text:
-     * <pre> {@code
-     * SafeHtmlBuilder builder = new SafeHtmlBuilder();
-     * builder.appendHtmlConstant("<b>");
-     * builder.appendEscaped(query);
-     * builder.appendHtmlConstant("<b/>");
-     * return builder.toSafeHtml();
-     * }</pre>
+     * Return caption as {@link SafeHtml} to ensure that malicious script
+     * couldn't be executed. Ensure that untrusted text is escaped.
      * <p>
-     * Example 2 returns the query as is:
-     * <pre> {@code
-     * return SafeHtmlUtils.fromString(query);
-     * }
+     * Read more about SafeHtml on the GWT project's website. <a
+     * href=http://www.gwtproject.org/doc/latest/DevGuideSecuritySafeHtml.html#Creating_SafeHtml_Values>
+     * http://www.gwtproject.org/doc/latest/DevGuideSecuritySafeHtml.html#Creating_SafeHtml_Values</a>
+     * <p>
+     * Example 1: As a basic example, return a simple text as caption.
+     * <pre>
+     *     return SafeHtmlUtils.fromString(query);
      * </pre>
+     * <p>
+     * Example 2: Return the user query in bold.
+     * <pre>
+     *     SafeHtmlBuilder builder = new SafeHtmlBuilder();
+     *     builder.appendHtmlConstant("&lt;b&gt;");
+     *     builder.appendEscaped(query);
+     *     builder.appendHtmlConstant("&lt;b/&gt;");
+     *     return builder.toSafeHtml();
+     * </pre>
+     * Read more about SafeHtml on GWT project's website. <a
+     * href=http://www.gwtproject.org/doc/latest/DevGuideSecuritySafeHtml.html#Creating_SafeHtml_Values>
+     * http://www.gwtproject.org/doc/latest/DevGuideSecuritySafeHtml.html#Creating_SafeHtml_Values</a>
      *
      * @param suggestion
      *         Suggestion data object of type {@code T}.
      * @param query
      *         Query that was issued by the user.
      * @return Text to be displayed for the user as suggestion as safe HTML.
+     * @see com.google.gwt.safehtml.shared.SafeHtmlUtils
+     * @see com.google.gwt.safehtml.shared.SafeHtmlBuilder
+     * @see com.google.gwt.safehtml.shared.SimpleHtmlSanitizer
      */
     @Override
     SafeHtml apply(T suggestion, String query);
