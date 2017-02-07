@@ -8,6 +8,8 @@ import java.util.function.Function;
  *
  * @param <T>
  *         Type of the suggestion data, e.g. a Java Bean.
+ * @see SuggestionGenerator
+ * @see SuggestionCaptionConverter
  */
 public interface SuggestionValueConverter<T> extends Function<T, String> {
 

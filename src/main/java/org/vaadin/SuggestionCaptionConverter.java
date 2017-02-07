@@ -11,6 +11,8 @@ import com.google.gwt.safehtml.shared.SafeHtml;
  *
  * @param <T>
  *         Type of the suggestion data, e.g. a Java Bean.
+ * @see SuggestionGenerator
+ * @see SuggestionValueConverter
  */
 public interface SuggestionCaptionConverter<T> extends
         BiFunction<T, String, SafeHtml> {
