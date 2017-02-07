@@ -1,4 +1,4 @@
-package org.vaadin.uiserver;
+package org.vaadin.addons.uiserver;
 
 import org.vaadin.addonhelpers.TServer;
 

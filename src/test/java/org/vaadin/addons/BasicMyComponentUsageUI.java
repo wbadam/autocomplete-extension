@@ -1,10 +1,11 @@
-package org.vaadin;
+package org.vaadin.addons;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.vaadin.addonhelpers.AbstractTest;
+import org.vaadin.addons.AutocompleteExtension;
 
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.vaadin.ui.Component;

@@ -5,7 +5,7 @@ import com.vaadin.annotations.Widgetset;
 /**
  * Configuration file for UI test cases
  */
-@Widgetset("org.vaadin.Widgetset")
+@Widgetset("org.vaadin.addons.Widgetset")
 public class Config {
 
 }

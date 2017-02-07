@@ -1,10 +1,10 @@
-package org.vaadin.client;
+package org.vaadin.addons.client;
 
 import java.util.Objects;
 
-import org.vaadin.AutocompleteExtension;
-import org.vaadin.client.jsinterop.JsEventListener;
-import org.vaadin.client.jsinterop.JsEventTarget;
+import org.vaadin.addons.AutocompleteExtension;
+import org.vaadin.addons.client.jsinterop.JsEventListener;
+import org.vaadin.addons.client.jsinterop.JsEventTarget;
 
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Style;

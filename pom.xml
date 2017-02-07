@@ -1,12 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.vaadin</groupId>
+    <groupId>org.vaadin.addons</groupId>
     <artifactId>autocomplete</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1.0</version>
     <packaging>bundle</packaging>
+    <name>Autocomplete Extension</name>
     <organization>
-        <name>Vaadin Community</name>
+        <name>Adam Wagner</name>
+        <url>https://github.com/wbadam/autocomplete-extension</url>
     </organization>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -21,13 +23,13 @@
         <Vaadin-Addon>${project.artifactId}-${project.version}.jar</Vaadin-Addon>
     </properties>
     <scm>
-        <url>git://github.com/your-github-account/autocomplete.git</url>
-        <connection>scm:git:git://github.com/your-github-account/autocomplete.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com:/your-github-account/autocomplete.git</developerConnection>
+        <url>https://github.com/wbadam/autocomplete-extension</url>
+        <connection>scm:git:git://github.com/wbadam/autocomplete-extension.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:/wbadam/autocomplete-extension.git</developerConnection>
     </scm>
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/your-github-account/autocomplete/issues</url>
+        <url>https://github.com/wbadam/autocomplete-extension/issues</url>
     </issueManagement>
     <licenses>
         <license>
@@ -107,7 +109,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>!org.vaadin.client,org.vaadin.*</Export-Package>
+                        <Export-Package>!org.vaadin.addons.client,org.vaadin.addons.*</Export-Package>
                         <Import-Package>!com.google.gwt.*,!com.vaadin.client.*,*</Import-Package>
                     </instructions>
                 </configuration>
@@ -145,7 +147,7 @@
                             <!-- Package format version - do not change -->
                             <Vaadin-Package-Version>1</Vaadin-Package-Version>
                             <Vaadin-License-Title>${Vaadin-License-Title}</Vaadin-License-Title>
-                            <Vaadin-Widgetsets>org.vaadin.Widgetset</Vaadin-Widgetsets>
+                            <Vaadin-Widgetsets>org.vaadin.addons.Widgetset</Vaadin-Widgetsets>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -170,7 +172,7 @@
                     <runTarget>http://localhost:9998/</runTarget>
                     <draftCompile>true</draftCompile>
                     <style>PRETTY</style>
-                    <module>org.vaadin.Widgetset</module>
+                    <module>org.vaadin.addons.Widgetset</module>
                     <!-- If you do lots of e.g. plain css changes and don't wish to use
                     hosted mode, you can force compile easily with uncommenting following rule -->
                     <!-- <force>true</force> -->

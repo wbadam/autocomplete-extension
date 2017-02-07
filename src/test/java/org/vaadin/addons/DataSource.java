@@ -1,4 +1,4 @@
-package org.vaadin;
+package org.vaadin.addons;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

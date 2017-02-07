@@ -1,4 +1,4 @@
-package org.vaadin.client.jsinterop;
+package org.vaadin.addons.client.jsinterop;
 
 import com.google.gwt.user.client.Event;
 

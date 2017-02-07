@@ -1,4 +1,4 @@
-package org.vaadin.client;
+package org.vaadin.addons.client;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-import org.vaadin.client.jsinterop.JsEventListener;
-import org.vaadin.client.jsinterop.JsEventTarget;
+import org.vaadin.addons.client.jsinterop.JsEventListener;
+import org.vaadin.addons.client.jsinterop.JsEventTarget;
 
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Document;

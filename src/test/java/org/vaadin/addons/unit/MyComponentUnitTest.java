@@ -1,4 +1,4 @@
-package org.vaadin.unit;
+package org.vaadin.addons.unit;
 
 public class MyComponentUnitTest {
 

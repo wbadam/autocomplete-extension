@@ -1,4 +1,4 @@
-package org.vaadin.it;
+package org.vaadin.addons.it;
 
 import org.vaadin.addonhelpers.automated.AbstractWebDriverCase;
 

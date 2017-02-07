@@ -1,4 +1,4 @@
-package org.vaadin.client;
+package org.vaadin.addons.client;
 
 public class AutocompleteExtensionState extends
         com.vaadin.shared.AbstractComponentState {

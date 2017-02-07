@@ -1,14 +1,14 @@
-package org.vaadin;
+package org.vaadin.addons;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.vaadin.client.AutocompleteExtensionClientRpc;
-import org.vaadin.client.AutocompleteExtensionServerRpc;
-import org.vaadin.client.AutocompleteExtensionState;
-import org.vaadin.client.SuggestionData;
+import org.vaadin.addons.client.AutocompleteExtensionClientRpc;
+import org.vaadin.addons.client.AutocompleteExtensionServerRpc;
+import org.vaadin.addons.client.AutocompleteExtensionState;
+import org.vaadin.addons.client.SuggestionData;
 
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.vaadin.server.AbstractExtension;

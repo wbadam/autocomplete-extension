@@ -1,4 +1,4 @@
-package org.vaadin.client;
+package org.vaadin.addons.client;
 
 import com.vaadin.shared.communication.ServerRpc;
 

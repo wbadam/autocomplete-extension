@@ -1,4 +1,4 @@
-package org.vaadin;
+package org.vaadin.addons;
 
 import java.util.function.BiFunction;
 
