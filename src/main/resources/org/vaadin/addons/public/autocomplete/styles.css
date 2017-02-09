@@ -17,7 +17,7 @@
 }
 
 .autocomplete-suggestion-list-item.selected, .autocomplete-suggestion-list-item:hover {
-    background-color: powderblue;
+    background-color: #F0F0F0;
 }
 
 .autocomplete-suggestion-list-item.empty {
