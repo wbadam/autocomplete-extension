@@ -22,12 +22,12 @@ public interface SuggestionGenerator<T> extends
      *
      * @param query
      *         User input to be used for generate suggestions.
-     * @param numberOfSuggestions
+     * @param limit
      *         Number of suggestions to be generated. This is the maximum number
      *         of suggestions that will be displayed on the user interface.
      * @return Generated list of type {@code T} objects to be used as the basis
      * of suggestions.
      */
     @Override
-    public List<T> apply(String query, Integer numberOfSuggestions);
+    public List<T> apply(String query, Integer limit);
 }
