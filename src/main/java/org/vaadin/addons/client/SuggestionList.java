@@ -6,9 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-import org.vaadin.addons.client.jsinterop.JsEventListener;
-import org.vaadin.addons.client.jsinterop.JsEventTarget;
-
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -16,7 +13,10 @@ import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.UListElement;
 import com.google.gwt.safehtml.shared.annotations.IsSafeHtml;
-import com.google.gwt.user.client.Event;
+
+import elemental.events.Event;
+import elemental.events.EventListener;
+import elemental.events.EventTarget;
 
 /**
  * Represents a suggestion list.
@@ -208,12 +208,12 @@ class SuggestionList {
         /**
          * Mouse down callback.
          */
-        private JsEventListener onMouseDown = this::onMouseDown;
+        private EventListener onMouseDown = this::onMouseDown;
 
         /**
          * On click callback.
          */
-        private JsEventListener onClick = this::onClick;
+        private EventListener onClick = this::onClick;
 
         /**
          * Value of this suggestion item. This will be set for text field when
@@ -236,14 +236,14 @@ class SuggestionList {
             parent.appendChild(this.li);
 
             // Register event listeners
-            JsEventTarget li = (JsEventTarget) this.li;
+            EventTarget li = this.li.cast();
             li.addEventListener(BrowserEvents.MOUSEDOWN, onMouseDown);
             li.addEventListener(BrowserEvents.CLICK, onClick);
         }
 
         private void removeFromParent() {
             // Unregister event listeners
-            JsEventTarget li = (JsEventTarget) this.li;
+            EventTarget li = this.li.cast();
             li.removeEventListener(BrowserEvents.MOUSEDOWN, onMouseDown);
             li.removeEventListener(BrowserEvents.CLICK, onClick);
 

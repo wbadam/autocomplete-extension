@@ -70,7 +70,8 @@ public class DemoAutocompleteExtensionUsageUI extends AbstractTest {
         return "<div class='suggestion-container'>"
                 + "<img src='" + user.getPicture() + "' class='userimage'>"
                 + "<span class='username'>"
-                + WordUtils.capitalizeFully(user.getName(), ' ').replaceAll("(?i)(" + query + ")", "<b>$1</b>")
+                + WordUtils.capitalizeFully(user.getName(), ' ')
+                .replaceAll("(?i)(" + query + ")", "<b>$1</b>")
                 + "</span>"
                 + "</div>";
     }

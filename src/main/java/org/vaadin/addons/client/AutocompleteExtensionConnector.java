@@ -3,14 +3,10 @@ package org.vaadin.addons.client;
 import java.util.Objects;
 
 import org.vaadin.addons.AutocompleteExtension;
-import org.vaadin.addons.client.jsinterop.JsEventListener;
-import org.vaadin.addons.client.jsinterop.JsEventTarget;
 
-import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.vaadin.client.ServerConnector;
 import com.vaadin.client.communication.RpcProxy;
@@ -19,6 +15,10 @@ import com.vaadin.client.extensions.AbstractExtensionConnector;
 import com.vaadin.client.ui.VTextField;
 import com.vaadin.client.ui.textfield.TextFieldConnector;
 import com.vaadin.shared.ui.Connect;
+
+import elemental.events.Event;
+import elemental.events.EventListener;
+import elemental.events.EventTarget;
 
 @Connect(AutocompleteExtension.class)
 public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
@@ -51,7 +51,7 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         }
     }
 
-    private final JsEventListener onInput = this::onInput;
+    private final EventListener onInput = this::onInput;
 
     private final SuggestionList suggestionList = new SuggestionList();
 
@@ -120,8 +120,8 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         });
 
         // Add listener for input event
-        ((JsEventTarget) textField.getElement())
-                .addEventListener(BrowserEvents.INPUT, onInput);
+        EventTarget textFieldTarget = textField.getElement().cast();
+        textFieldTarget.addEventListener(Event.INPUT, onInput);
 
         // Hide suggestion list when field looses focus
         textField.addBlurHandler(event -> suggestionList.hide());
@@ -143,8 +143,8 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         super.onUnregister();
 
         // Remove input event listener
-        ((JsEventTarget) getTextField().getElement())
-                .removeEventListener(BrowserEvents.INPUT, onInput);
+        EventTarget textFieldTarget = getTextField().getElement().cast();
+        textFieldTarget.removeEventListener(Event.INPUT, onInput);
     }
 
     private VTextField getTextField() {
