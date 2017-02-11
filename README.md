@@ -1,28 +1,106 @@
-# autocomplete
+# Autocomplete Extension
 
-This is a Vaadin add-on project created with in.virit:vaadin-gwt-addon archetype.
-The project supports GWT based extensions for Vaadin.
+Autocomplete Extension is a Vaadin add-on for TextField in Vaadin 8.
 
-## Development instructions 
+## Details
 
-1. Import to your favourite IDE
-2. Run main method of the Server class to launch embedded web server that lists all your test UIs at http://localhost:9998
-3. Code and test
-  * create UI's for various use cases for your add-ons, see examples. These can also work as usage examples for your add-on users.
-  * create browser level and integration tests under src/test/java/
-  * Browser level tests are executed manually from IDE (JUnit case) or with Maven profile "browsertests" (mvn verify -Pbrowsertests). If you have a setup for solidly working Selenium driver(s), consider enabling that profile by default.
-4. Test also in real world projects, on good real integration test is to *create a separate demo project* using vaadin-archetype-application, build a snapshot release ("mvn install") of the add-on and use the snapshot build in it. Note, that you can save this demo project next to your add-on project and save it to same GIT(or some else SCM) repository, just keep them separated for perfect testing.
+This extension adds autocomplete capability to the TextField component.
+Suggestions appear below the text field according to the user query and can be selected using the keyboard or mouse.
 
+Suggestions can be any HTML making it possible to create complex visual representation such as icons, bold text etc.
 
-## GWT related stuff
+Any Java object can represent a suggestion item and converters provide a caption (to be displayed on the UI) and value (to add to the text field) for each. This way it is possible to reuse the existing data that comes from the database.
 
-* To recompile test widgetset, issue *mvn vaadin:compile*, if you think the widgetset changes are not picked up by Vaadin plugin, do a *mvn clean package* or try with parameter *mvn vaadin:compile -Dgwt.compiler.force=true*
-* To use superdevmode, issue "mvn vaadin:run-codeserver" and then just open superdevmode like with any other project
+## Usage
 
-## Creating releases
+- Create an `AutocompleteExtension` and pass the text field to be extended as parameter
+  - The generic parameter is the type of a suggestion item that can be any Java object
+- Set a suggestion generator
+  - Implementation of `SuggestionGenerator` interface which is a `BiFunction` with
+  - user query and number of suggestions as parameters and
+  - list of suggestions as return value
+- Optionally set caption converter and value converter
+  - Caption is the visual representation of a suggestion item
+    - `SuggestionCaptionConverter` is a `BiFunction` with
+    - a suggestion item and the user query as parameters and
+    - (HTML) string as return value (this is displayed as a suggestion item)
+  - Value is set for the text field when the suggestion item is selected
+    - `SuggestionValueConverter` is a `Function` with
+    - a suggestion item as parameter and
+    - the value as return value
 
-1. Push your changes to e.g. Github 
-2. Update pom.xml to contain proper SCM coordinates (first time only)
-3. Use Maven release plugin (mvn release:prepare; mvn release:perform)
-4. Upload the ZIP file generated to target/checkout/target directory to https://vaadin.com/directory service (and/or optionally publish your add-on to Maven central)
+### Examples
 
+#### Simple text
+
+```Java
+TextField planetField = new TextField();
+
+AutocompleteExtension<String> planetExtension = new AutocompleteExtension<>(
+        planetField);
+planetExtension.setSuggestionGenerator(this::suggestPlanet);
+
+// ...
+
+private List<String> suggestPlanet(String query, int cap) {
+    return DataSource.getPlanets().stream().filter(p -> p.contains(query))
+        .limit(cap).collect(Collectors.toList());
+}
+```
+
+#### HTML
+
+```Java
+        TextField userField = new TextField();
+        userField.setWidth(250, Unit.PIXELS);
+
+        AutocompleteExtension<DataSource.User> userSuggestion =
+                new AutocompleteExtension<>(userField);
+        userSuggestion.setSuggestionGenerator(
+                this::suggestUsers,
+                this::convertValueUser,
+                this::convertCaptionUser);
+        userSuggestion.setSuggestionDelay(200);  // Wait 200 milliseconds until server call when typing
+
+    // ...
+
+    private List<DataSource.User> suggestUsers(String query, int cap) {
+        return DataSource.getUsers().stream()
+                .filter(user -> user.getName().contains(query.toLowerCase()))
+                .limit(cap).collect(Collectors.toList());
+    }
+
+    private String convertValueUser(DataSource.User user) {
+        return WordUtils.capitalizeFully(user.getName(), ' ');
+    }
+
+    private String convertCaptionUser(DataSource.User user, String query) {
+        return "<div class='suggestion-container'>"
+                + "<img src='" + user.getPicture() + "' class='userimage'>"
+                + "<span class='username'>"
+                + WordUtils.capitalizeFully(user.getName(), ' ')
+                .replaceAll("(?i)(" + query + ")", "<b>$1</b>")
+                + "</span>"
+                + "</div>";
+    }
+
+// ...
+
+public class User {
+    private String name;
+    private String picture;
+
+    public User(String name, String picture) {
+        this.name = name;
+        this.picture = picture;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+}
+```
