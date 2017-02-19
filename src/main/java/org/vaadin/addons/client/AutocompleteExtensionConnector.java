@@ -60,16 +60,18 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
 
     private final SuggestionTimer suggestionTimer = new SuggestionTimer(rpc);
 
+    private VTextField textField;
+
     public AutocompleteExtensionConnector() {
         registerRpc(AutocompleteExtensionClientRpc.class,
                 (suggestions, query) -> {
                     // Make sure that the received suggestions are not outdated
-                    if (Objects.equals(query, getTextField().getValue())) {
+                    if (Objects.equals(query, textField.getValue())) {
                         // Fill suggestion list with captions
                         suggestionList.fill(suggestions);
 
                         // Show and set width
-                        suggestionList.show(getTextField().getOffsetWidth(),
+                        suggestionList.show(textField.getOffsetWidth(),
                                 Style.Unit.PX);
                     }
                 });
@@ -78,9 +80,9 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
     @Override
     protected void extend(ServerConnector serverConnector) {
 
-        suggestionList.setMaxSize(getState().suggestionListSize);
+        textField = ((TextFieldConnector) serverConnector).getWidget();
 
-        VTextField textField = getTextField();
+        suggestionList.setMaxSize(getState().suggestionListSize);
 
         textField.addAttachHandler(event -> {
             if (event.isAttached()) {
@@ -132,7 +134,7 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
 
     private void onSuggestionSelected() {
         // Fill textfield with suggested content
-        getTextField().setValue(suggestionList.getSelectedItem().getValue());
+        textField.setValue(suggestionList.getSelectedItem().getValue());
 
         // Hide suggestion list
         suggestionList.hide();
@@ -143,17 +145,13 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         super.onUnregister();
 
         // Remove input event listener
-        EventTarget textFieldTarget = getTextField().getElement().cast();
+        EventTarget textFieldTarget = textField.getElement().cast();
         textFieldTarget.removeEventListener(Event.INPUT, onInput);
     }
 
-    private VTextField getTextField() {
-        return ((TextFieldConnector) getParent()).getWidget();
-    }
-
     private void onInput(Event event) {
-        if (!getTextField().getValue().isEmpty()) {
-            showSuggestionsFor(getTextField().getValue(),
+        if (!textField.getValue().isEmpty()) {
+            showSuggestionsFor(textField.getValue(),
                     getState().suggestionDelay);
         } else {
             suggestionList.hide();
