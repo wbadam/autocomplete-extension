@@ -11,14 +11,11 @@ import com.google.gwt.user.client.Timer;
 import com.vaadin.client.ServerConnector;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.communication.StateChangeEvent;
+import com.vaadin.client.event.InputEvent;
 import com.vaadin.client.extensions.AbstractExtensionConnector;
 import com.vaadin.client.ui.VTextField;
 import com.vaadin.client.ui.textfield.TextFieldConnector;
 import com.vaadin.shared.ui.Connect;
-
-import elemental.events.Event;
-import elemental.events.EventListener;
-import elemental.events.EventTarget;
 
 @Connect(AutocompleteExtension.class)
 public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
@@ -50,8 +47,6 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
             schedule(delayMillis);
         }
     }
-
-    private final EventListener onInput = this::onInput;
 
     private final SuggestionList suggestionList = new SuggestionList();
 
@@ -122,8 +117,7 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         });
 
         // Add listener for input event
-        EventTarget textFieldTarget = textField.getElement().cast();
-        textFieldTarget.addEventListener(Event.INPUT, onInput);
+        textField.addDomHandler(this::onInput, InputEvent.getType());
 
         // Hide suggestion list when field looses focus
         textField.addBlurHandler(event -> suggestionList.hide());
@@ -140,16 +134,7 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         suggestionList.hide();
     }
 
-    @Override
-    public void onUnregister() {
-        super.onUnregister();
-
-        // Remove input event listener
-        EventTarget textFieldTarget = textField.getElement().cast();
-        textFieldTarget.removeEventListener(Event.INPUT, onInput);
-    }
-
-    private void onInput(Event event) {
+    private void onInput(InputEvent event) {
         if (!textField.getValue().isEmpty()) {
             showSuggestionsFor(textField.getValue(),
                     getState().suggestionDelay);
