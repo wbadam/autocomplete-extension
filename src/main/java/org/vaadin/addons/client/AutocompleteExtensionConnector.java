@@ -1,11 +1,13 @@
 package org.vaadin.addons.client;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import org.vaadin.addons.AutocompleteExtension;
 
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.vaadin.client.ServerConnector;
@@ -56,6 +58,8 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
     private final SuggestionTimer suggestionTimer = new SuggestionTimer(rpc);
 
     private TextFieldConnector textFieldConnector;
+
+    private HandlerRegistration inputHandler;
 
     public AutocompleteExtensionConnector() {
         registerRpc(AutocompleteExtensionClientRpc.class,
@@ -121,13 +125,23 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         });
 
         // Add listener for input event
-        textField.addDomHandler(this::onInput, InputEvent.getType());
+        inputHandler = textField
+                .addDomHandler(this::onInput, InputEvent.getType());
 
         // Hide suggestion list when field looses focus
         textField.addBlurHandler(event -> suggestionList.hide());
 
         // Register suggestion click listener
         suggestionList.setItemClickHandler(this::onSuggestionSelected);
+    }
+
+    @Override
+    public void onUnregister() {
+        super.onUnregister();
+
+        // Remove input event listener
+        Optional.ofNullable(inputHandler)
+                .ifPresent(HandlerRegistration::removeHandler);
     }
 
     private void onSuggestionSelected() {
