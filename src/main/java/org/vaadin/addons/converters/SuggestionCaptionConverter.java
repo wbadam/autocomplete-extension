@@ -1,4 +1,4 @@
-package org.vaadin.addons;
+package org.vaadin.addons.converters;
 
 import java.util.function.BiFunction;
 
@@ -9,7 +9,7 @@ import java.util.function.BiFunction;
  *
  * @param <T>
  *         Type of the suggestion data, e.g. a Java Bean.
- * @see SuggestionGenerator
+ * @see org.vaadin.addons.generators.SuggestionGenerator
  * @see SuggestionValueConverter
  */
 public interface SuggestionCaptionConverter<T> extends

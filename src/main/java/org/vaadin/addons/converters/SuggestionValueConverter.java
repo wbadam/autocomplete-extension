@@ -1,4 +1,4 @@
-package org.vaadin.addons;
+package org.vaadin.addons.converters;
 
 import java.util.function.Function;
 
@@ -8,7 +8,7 @@ import java.util.function.Function;
  *
  * @param <T>
  *         Type of the suggestion data, e.g. a Java Bean.
- * @see SuggestionGenerator
+ * @see org.vaadin.addons.generators.SuggestionGenerator
  * @see SuggestionCaptionConverter
  */
 public interface SuggestionValueConverter<T> extends Function<T, String> {

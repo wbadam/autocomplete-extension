@@ -1,20 +1,22 @@
-package org.vaadin.addons;
+package org.vaadin.addons.generators;
 
 import java.util.List;
-import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 /**
  * Implementation of this interface generates suggestions for user input. The
  * result list is to be converted to caption-value pairs before sent to the
  * client.
+ * <p>
+ * Use this for synchronous queries. Return the generated suggestions as the
+ * {@code generate()} method's return value.
  *
  * @param <T>
  *         Type of data to be generated.
- * @see SuggestionCaptionConverter
- * @see SuggestionValueConverter
+ * @see org.vaadin.addons.converters.SuggestionCaptionConverter
+ * @see org.vaadin.addons.converters.SuggestionValueConverter
  */
-public interface SuggestionGenerator<T> extends
-        BiFunction<String, Integer, List<T>> {
+public interface SyncSuggestionGenerator<T> extends SuggestionGenerator<T> {
 
     /**
      * Generates list of objects of type {@code T} to be used as the basis of
@@ -28,6 +30,11 @@ public interface SuggestionGenerator<T> extends
      * @return Generated list of type {@code T} objects to be used as the basis
      * of suggestions.
      */
+    List<T> generate(String query, Integer limit);
+
     @Override
-    public List<T> apply(String query, Integer limit);
+    default void generate(String query, Integer limit,
+            Consumer<List<T>> callback) {
+        callback.accept(generate(query, limit));
+    }
 }
