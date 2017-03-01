@@ -47,7 +47,7 @@ public class AutocompleteExtension<T> extends AbstractExtension {
         Optional.ofNullable(suggestionGenerator).ifPresent(generator -> {
             // Generate suggestion list
             List<T> suggestions = generator
-                    .apply(query, getState().suggestionListSize);
+                    .apply(query, getState(false).suggestionListSize);
 
             // Get converters
             SuggestionCaptionConverter<T> cConverter = Optional
@@ -133,6 +133,33 @@ public class AutocompleteExtension<T> extends AbstractExtension {
      */
     public int getSuggestionDelay() {
         return getState(false).suggestionDelay;
+    }
+
+    /**
+     * Set maximum allowed size of the suggestion list.
+     *
+     * @param size
+     *         Size of the suggestion list. Must not be negative.
+     * @since 0.2.0
+     */
+    public void setSuggestionListSize(int size) {
+        if (size < 0) {
+            throw new IllegalArgumentException("Size must be positive");
+        }
+
+        if (!Objects.equals(getState(false).suggestionListSize, size)) {
+            getState().suggestionListSize = size;
+        }
+    }
+
+    /**
+     * Returns the maximum allowed size of the suggestion list.
+     *
+     * @return Maximum allowed size of the suggestion list.
+     * @since 0.2.0
+     */
+    public int getSuggestionListSize() {
+        return getState(false).suggestionListSize;
     }
 
     @Override
