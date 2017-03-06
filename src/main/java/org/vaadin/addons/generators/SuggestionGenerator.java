@@ -16,6 +16,7 @@ import java.util.function.Consumer;
  * @see org.vaadin.addons.converters.SuggestionCaptionConverter
  * @see org.vaadin.addons.converters.SuggestionValueConverter
  */
+@FunctionalInterface
 public interface SuggestionGenerator<T> {
 
     /**

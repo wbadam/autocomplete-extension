@@ -61,12 +61,13 @@ public class AutocompleteExtension<T> extends AbstractExtension {
                                 .orElse(defaultValueConverter);
 
                         // Create a list of suggestion data and send it to the client
-                        getRpcProxy(AutocompleteExtensionClientRpc.class)
-                                .showSuggestions(suggestions.stream()
-                                        .map(s -> new SuggestionData(
-                                                vConverter.apply(s),
-                                                cConverter.apply(s, query)))
-                                        .collect(Collectors.toList()), query);
+                        AutocompleteExtension.this.getUI().access(() ->
+                                getRpcProxy(AutocompleteExtensionClientRpc.class)
+                                        .showSuggestions(suggestions.stream()
+                                                        .map(s -> new SuggestionData(
+                                                                vConverter.apply(s),
+                                                                cConverter.apply(s, query)))
+                                                        .collect(Collectors.toList()), query));
                     });
         });
     };
