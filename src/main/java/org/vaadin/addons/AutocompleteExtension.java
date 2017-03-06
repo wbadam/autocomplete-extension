@@ -140,7 +140,7 @@ public class AutocompleteExtension<T> extends AbstractExtension {
      *
      * @param size
      *         Size of the suggestion list. Must not be negative.
-     * @since 0.2.0
+     * @since 0.1.4
      */
     public void setSuggestionListSize(int size) {
         if (size < 0) {
@@ -156,7 +156,7 @@ public class AutocompleteExtension<T> extends AbstractExtension {
      * Returns the maximum allowed size of the suggestion list.
      *
      * @return Maximum allowed size of the suggestion list.
-     * @since 0.2.0
+     * @since 0.1.4
      */
     public int getSuggestionListSize() {
         return getState(false).suggestionListSize;
