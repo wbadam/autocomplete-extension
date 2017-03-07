@@ -11,6 +11,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.vaadin.client.ServerConnector;
+import com.vaadin.client.annotations.OnStateChange;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.event.InputEvent;
@@ -204,13 +205,9 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         }
     }
 
-    @Override
-    public void onStateChanged(StateChangeEvent stateChangeEvent) {
-        super.onStateChanged(stateChangeEvent);
-
-        if (stateChangeEvent.hasPropertyChanged("suggestionListSize")) {
-            suggestionList.setMaxSize(getState().suggestionListSize);
-        }
+    @OnStateChange("suggestionListSize")
+    private void changeSuggestionListSize() {
+        suggestionList.setMaxSize(getState().suggestionListSize);
     }
 
     @Override

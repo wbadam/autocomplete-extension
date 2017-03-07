@@ -50,7 +50,7 @@ public class AutocompleteExtension<T> extends AbstractExtension {
         // TODO: 04/02/2017 Register RPC only when generator set
         Optional.ofNullable(suggestionGenerator).ifPresent(generator -> {
             // Generate suggestion list
-            generator.generate(query, getState().suggestionListSize,
+            generator.generate(query, getState(false).suggestionListSize,
                     suggestions -> {
                         // Get converters
                         SuggestionCaptionConverter<T> cConverter = Optional
@@ -177,6 +177,33 @@ public class AutocompleteExtension<T> extends AbstractExtension {
      */
     public int getSuggestionDelay() {
         return getState(false).suggestionDelay;
+    }
+
+    /**
+     * Set maximum allowed size of the suggestion list.
+     *
+     * @param size
+     *         Size of the suggestion list. Must not be negative.
+     * @since 0.1.4
+     */
+    public void setSuggestionListSize(int size) {
+        if (size < 0) {
+            throw new IllegalArgumentException("Size must be positive");
+        }
+
+        if (!Objects.equals(getState(false).suggestionListSize, size)) {
+            getState().suggestionListSize = size;
+        }
+    }
+
+    /**
+     * Returns the maximum allowed size of the suggestion list.
+     *
+     * @return Maximum allowed size of the suggestion list.
+     * @since 0.1.4
+     */
+    public int getSuggestionListSize() {
+        return getState(false).suggestionListSize;
     }
 
     @Override
