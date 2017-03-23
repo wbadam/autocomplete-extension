@@ -30,6 +30,9 @@ public class DemoAutocompleteExtensionUsageUI extends AbstractTest {
         AutocompleteExtension<String> planetExtension = new AutocompleteExtension<>(
                 planetField);
         planetExtension.setSuggestionGenerator(this::suggestPlanet);
+        planetExtension.addSuggestionSelectListener(event -> {
+            System.out.println(event.getSelectedValue());
+        });
 
         // Users
         Label userLabel = new Label(
