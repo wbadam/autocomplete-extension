@@ -13,7 +13,6 @@ import com.google.gwt.user.client.Timer;
 import com.vaadin.client.ServerConnector;
 import com.vaadin.client.annotations.OnStateChange;
 import com.vaadin.client.communication.RpcProxy;
-import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.event.InputEvent;
 import com.vaadin.client.extensions.AbstractExtensionConnector;
 import com.vaadin.client.ui.VTextField;
@@ -146,12 +145,17 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
     }
 
     private void onSuggestionSelected() {
+        final String selectedValue = suggestionList.getSelectedItem()
+                .getValue();
+
         // Fill textfield with suggested content
-        textFieldConnector.getWidget()
-                .setValue(suggestionList.getSelectedItem().getValue());
+        textFieldConnector.getWidget().setValue(selectedValue);
 
         // Hide suggestion list
         suggestionList.hide();
+
+        // Fire suggestion select event
+        rpc.suggestionSelected(selectedValue);
 
         // Fire value change event
         textFieldConnector.sendValueChange();

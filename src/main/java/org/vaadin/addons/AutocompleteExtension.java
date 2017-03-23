@@ -11,6 +11,7 @@ import org.vaadin.addons.client.AutocompleteExtensionState;
 import org.vaadin.addons.client.SuggestionData;
 
 import com.vaadin.server.AbstractExtension;
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.TextField;
 
 /**
@@ -41,30 +42,6 @@ public class AutocompleteExtension<T> extends AbstractExtension {
             (s, q) -> s.toString();
     private final SuggestionValueConverter<T> defaultValueConverter = T::toString;
 
-    private AutocompleteExtensionServerRpc rpc = query -> {
-
-        // TODO: 04/02/2017 Register RPC only when generator set
-        Optional.ofNullable(suggestionGenerator).ifPresent(generator -> {
-            // Generate suggestion list
-            List<T> suggestions = generator
-                    .apply(query, getState(false).suggestionListSize);
-
-            // Get converters
-            SuggestionCaptionConverter<T> cConverter = Optional
-                    .ofNullable(captionConverter)
-                    .orElse(defaultCaptionConverter);
-            SuggestionValueConverter<T> vConverter = Optional
-                    .ofNullable(valueConverter).orElse(defaultValueConverter);
-
-            // Create a list of suggestion data and send it to the client
-            getRpcProxy(AutocompleteExtensionClientRpc.class)
-                    .showSuggestions(suggestions.stream()
-                            .map(s -> new SuggestionData(vConverter.apply(s),
-                                    cConverter.apply(s, query)))
-                            .collect(Collectors.toList()), query);
-        });
-    };
-
     /**
      * Extends {@code textField} to add autocomplete functionality.
      *
@@ -72,7 +49,37 @@ public class AutocompleteExtension<T> extends AbstractExtension {
      *         Field to be extended.
      */
     public AutocompleteExtension(TextField textField) {
-        registerRpc(rpc);
+        registerRpc(new AutocompleteExtensionServerRpc() {
+            @Override
+            public void getSuggestion(String query) {
+                Optional.ofNullable(suggestionGenerator).ifPresent(generator -> {
+                    // Generate suggestion list
+                    List<T> suggestions = generator
+                            .apply(query, getState(false).suggestionListSize);
+
+                    // Get converters
+                    SuggestionCaptionConverter<T> cConverter = Optional
+                            .ofNullable(captionConverter)
+                            .orElse(defaultCaptionConverter);
+                    SuggestionValueConverter<T> vConverter = Optional
+                            .ofNullable(valueConverter)
+                            .orElse(defaultValueConverter);
+
+                    // Create a list of suggestion data and send it to the client
+                    getRpcProxy(AutocompleteExtensionClientRpc.class)
+                            .showSuggestions(suggestions.stream()
+                                    .map(s -> new SuggestionData(
+                                            vConverter.apply(s),
+                                            cConverter.apply(s, query)))
+                                    .collect(Collectors.toList()), query);
+                });
+            }
+
+            @Override
+            public void suggestionSelected(String value) {
+                fireEvent(new SuggestionSelectEvent(textField, value));
+            }
+        });
 
         super.extend(textField);
     }
@@ -160,6 +167,21 @@ public class AutocompleteExtension<T> extends AbstractExtension {
      */
     public int getSuggestionListSize() {
         return getState(false).suggestionListSize;
+    }
+
+    /**
+     * Add listener for suggestion select events. The event is triggered
+     * whenever a suggestion item is selected by either mouse or keyboard.
+     *
+     * @param listener
+     *         Listener for suggestion select events.
+     * @return Handle for removing the listener.
+     * @since 0.1.5
+     */
+    public Registration addSuggestionSelectListener(
+            SuggestionSelectListener listener) {
+        return addListener(SuggestionSelectEvent.class, listener,
+                SuggestionSelectListener.SUGGESTION_SELECT_METHOD);
     }
 
     @Override
