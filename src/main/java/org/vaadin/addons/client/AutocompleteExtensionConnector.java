@@ -57,7 +57,7 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
 
     private final SuggestionTimer suggestionTimer = new SuggestionTimer(rpc);
 
-    private TextFieldConnector textFieldConnector;
+    private VTextField textField;
 
     private HandlerRegistration inputHandler;
 
@@ -65,14 +65,12 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         registerRpc(AutocompleteExtensionClientRpc.class,
                 (suggestions, query) -> {
                     // Make sure that the received suggestions are not outdated
-                    if (Objects.equals(query,
-                            textFieldConnector.getWidget().getValue())) {
+                    if (Objects.equals(query, textField.getValue())) {
                         // Fill suggestion list with captions
                         suggestionList.fill(suggestions);
 
                         // Show and set width
-                        suggestionList.show(textFieldConnector.getWidget()
-                                        .getOffsetWidth(),
+                        suggestionList.show(textField.getOffsetWidth(),
                                 Style.Unit.PX);
                     }
                 });
@@ -81,11 +79,9 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
     @Override
     protected void extend(ServerConnector serverConnector) {
 
-        textFieldConnector = (TextFieldConnector) serverConnector;
+        textField = ((TextFieldConnector) serverConnector).getWidget();
 
         suggestionList.setMaxSize(getState().suggestionListSize);
-
-        VTextField textField = textFieldConnector.getWidget();
 
         textField.addAttachHandler(event -> {
             if (event.isAttached()) {
@@ -149,21 +145,18 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
                 .getValue();
 
         // Fill textfield with suggested content
-        textFieldConnector.getWidget().setValue(selectedValue);
+        textField.setValue(selectedValue);
 
         // Hide suggestion list
         suggestionList.hide();
 
         // Fire suggestion select event
         rpc.suggestionSelected(selectedValue);
-
-        // Fire value change event
-        textFieldConnector.sendValueChange();
     }
 
     private void onInput(InputEvent event) {
-        if (!textFieldConnector.getWidget().getValue().isEmpty()) {
-            showSuggestionsFor(textFieldConnector.getWidget().getValue(),
+        if (!textField.getValue().isEmpty()) {
+            showSuggestionsFor(textField.getValue(),
                     getState().suggestionDelay);
         } else {
             suggestionList.hide();
