@@ -1,4 +1,4 @@
-package org.vaadin.addons;
+package org.vaadin.addons.autocomplete.event;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TextField;
@@ -7,7 +7,7 @@ import com.vaadin.ui.TextField;
  * Server side event that is triggered when a suggestion is selected from the
  * list.
  *
- * @since 0.1.5
+ * @since 0.2.0
  */
 public class SuggestionSelectEvent extends Component.Event {
 

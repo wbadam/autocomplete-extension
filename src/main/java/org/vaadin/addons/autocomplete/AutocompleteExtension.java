@@ -1,14 +1,19 @@
-package org.vaadin.addons;
+package org.vaadin.addons.autocomplete;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.vaadin.addons.client.AutocompleteExtensionClientRpc;
-import org.vaadin.addons.client.AutocompleteExtensionServerRpc;
-import org.vaadin.addons.client.AutocompleteExtensionState;
-import org.vaadin.addons.client.SuggestionData;
+import org.vaadin.addons.autocomplete.client.AutocompleteExtensionClientRpc;
+import org.vaadin.addons.autocomplete.client.AutocompleteExtensionServerRpc;
+import org.vaadin.addons.autocomplete.client.AutocompleteExtensionState;
+import org.vaadin.addons.autocomplete.client.SuggestionData;
+import org.vaadin.addons.autocomplete.converter.SuggestionCaptionConverter;
+import org.vaadin.addons.autocomplete.converter.SuggestionValueConverter;
+import org.vaadin.addons.autocomplete.event.SuggestionSelectEvent;
+import org.vaadin.addons.autocomplete.event.SuggestionSelectListener;
+import org.vaadin.addons.autocomplete.generator.SuggestionGenerator;
 
 import com.vaadin.server.AbstractExtension;
 import com.vaadin.shared.Registration;
@@ -176,7 +181,7 @@ public class AutocompleteExtension<T> extends AbstractExtension {
      * @param listener
      *         Listener for suggestion select events.
      * @return Handle for removing the listener.
-     * @since 0.1.5
+     * @since 0.2.0
      */
     public Registration addSuggestionSelectListener(
             SuggestionSelectListener listener) {

@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.vaadin.addons</groupId>
     <artifactId>autocomplete</artifactId>
-    <version>0.1.5-SNAPSHOT</version>
+    <version>0.2.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Autocomplete Extension</name>
     <organization>
@@ -115,7 +115,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>!org.vaadin.addons.client,org.vaadin.addons.*</Export-Package>
+                        <Export-Package>!org.vaadin.addons.autocomplete.client,org.vaadin.addons.autocomplete.*</Export-Package>
                         <Import-Package>!com.google.gwt.*,!com.vaadin.client.*,*</Import-Package>
                     </instructions>
                 </configuration>
@@ -153,7 +153,7 @@
                             <!-- Package format version - do not change -->
                             <Vaadin-Package-Version>1</Vaadin-Package-Version>
                             <Vaadin-License-Title>${Vaadin-License-Title}</Vaadin-License-Title>
-                            <Vaadin-Widgetsets>org.vaadin.addons.Widgetset</Vaadin-Widgetsets>
+                            <Vaadin-Widgetsets>org.vaadin.addons.autocomplete.Widgetset</Vaadin-Widgetsets>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -178,7 +178,7 @@
                     <runTarget>http://localhost:9998/</runTarget>
                     <draftCompile>true</draftCompile>
                     <style>PRETTY</style>
-                    <module>org.vaadin.addons.Widgetset</module>
+                    <module>org.vaadin.addons.autocomplete.Widgetset</module>
                     <!-- If you do lots of e.g. plain css changes and don't wish to use
                     hosted mode, you can force compile easily with uncommenting following rule -->
                     <!-- <force>true</force> -->

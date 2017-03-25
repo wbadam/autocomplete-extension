@@ -1,6 +1,8 @@
-package org.vaadin.addons;
+package org.vaadin.addons.autocomplete.converter;
 
 import java.util.function.BiFunction;
+
+import org.vaadin.addons.autocomplete.generator.SuggestionGenerator;
 
 /**
  * Converter function for converting suggestion data into caption for a

@@ -1,7 +1,10 @@
-package org.vaadin.addons;
+package org.vaadin.addons.autocomplete.generator;
 
 import java.util.List;
 import java.util.function.BiFunction;
+
+import org.vaadin.addons.autocomplete.converter.SuggestionCaptionConverter;
+import org.vaadin.addons.autocomplete.converter.SuggestionValueConverter;
 
 /**
  * Implementation of this interface generates suggestions for user input. The

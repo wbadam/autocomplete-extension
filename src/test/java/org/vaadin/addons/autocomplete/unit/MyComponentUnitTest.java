@@ -1,4 +1,4 @@
-package org.vaadin.addons.unit;
+package org.vaadin.addons.autocomplete.unit;
 
 public class MyComponentUnitTest {
 

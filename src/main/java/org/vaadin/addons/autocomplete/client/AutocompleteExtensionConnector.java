@@ -1,9 +1,9 @@
-package org.vaadin.addons.client;
+package org.vaadin.addons.autocomplete.client;
 
 import java.util.Objects;
 import java.util.Optional;
 
-import org.vaadin.addons.AutocompleteExtension;
+import org.vaadin.addons.autocomplete.AutocompleteExtension;
 
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.KeyCodes;

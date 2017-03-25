@@ -1,6 +1,8 @@
-package org.vaadin.addons;
+package org.vaadin.addons.autocomplete.converter;
 
 import java.util.function.Function;
+
+import org.vaadin.addons.autocomplete.generator.SuggestionGenerator;
 
 /**
  * Converter function to convert suggestion data into text value to be set for

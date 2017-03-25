@@ -1,4 +1,4 @@
-package org.vaadin.addons;
+package org.vaadin.addons.autocomplete.event;
 
 import java.lang.reflect.Method;
 
@@ -7,7 +7,7 @@ import com.vaadin.event.SerializableEventListener;
 /**
  * Listener interface for suggestion select events.
  *
- * @since 0.1.5
+ * @since 0.2.0
  */
 @FunctionalInterface
 public interface SuggestionSelectListener extends SerializableEventListener {

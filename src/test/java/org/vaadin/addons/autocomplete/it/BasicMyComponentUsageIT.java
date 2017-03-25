@@ -1,4 +1,4 @@
-package org.vaadin.addons.it;
+package org.vaadin.addons.autocomplete.it;
 
 import org.vaadin.addonhelpers.automated.AbstractWebDriverCase;
 

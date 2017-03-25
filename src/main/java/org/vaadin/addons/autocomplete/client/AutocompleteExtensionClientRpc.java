@@ -1,4 +1,4 @@
-package org.vaadin.addons.client;
+package org.vaadin.addons.autocomplete.client;
 
 import java.util.List;
 
