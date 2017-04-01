@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 import com.google.gwt.dom.client.BrowserEvents;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LIElement;
@@ -23,6 +24,7 @@ import elemental.events.EventTarget;
  */
 class SuggestionList {
 
+    private static final String CLASS_SUGGESTION_LIST_WRAPPER = "autocomplete-suggestion-list-wrapper";
     private static final String CLASS_SUGGESTION_LIST = "autocomplete-suggestion-list";
     private static final String CLASS_SUGGESTION_LIST_ITEM = "autocomplete-suggestion-list-item";
 
@@ -31,9 +33,14 @@ class SuggestionList {
     private static final String CLASS_EMPTY = "empty";
 
     /**
+     * Wrapper element of the suggestion list.
+     */
+    private final DivElement wrapper = createWrapper();
+
+    /**
      * List {@code <ul>} element.
      */
-    private final UListElement ul = createList();
+    private final UListElement ul = createList(wrapper);
 
     /**
      * Collection of suggestion items. Items contain {@code <li>} elements.
@@ -55,19 +62,26 @@ class SuggestionList {
      */
     private Runnable itemClickHandler;
 
-    private UListElement createList() {
+    private DivElement createWrapper() {
+        DivElement div = Document.get().createDivElement();
+        div.setClassName(CLASS_SUGGESTION_LIST_WRAPPER);
+        return div;
+    }
+
+    private UListElement createList(Element wrapper) {
         UListElement ul = Document.get().createULElement();
         ul.setClassName(CLASS_SUGGESTION_LIST);
+        wrapper.appendChild(ul);
         return ul;
     }
 
     /**
      * Returns the root DOM element of this suggestion list.
      *
-     * @return Root {@code <ul>} element.
+     * @return Root {@code <div>} element.
      */
     public Element getElement() {
-        return ul;
+        return wrapper;
     }
 
     /**
@@ -133,8 +147,8 @@ class SuggestionList {
      *         Unit of width.
      */
     public void show(double width, Style.Unit unit) {
-        ul.getStyle().setWidth(width, unit);
-        ul.removeClassName(CLASS_HIDDEN);
+        wrapper.getStyle().setWidth(width, unit);
+        wrapper.removeClassName(CLASS_HIDDEN);
         visible = true;
     }
 
@@ -143,7 +157,7 @@ class SuggestionList {
      */
     public void hide() {
         Optional.ofNullable(selectedItem).ifPresent(SuggestionItem::deselect);
-        ul.addClassName(CLASS_HIDDEN);
+        wrapper.addClassName(CLASS_HIDDEN);
         visible = false;
     }
 

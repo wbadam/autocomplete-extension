@@ -1,13 +1,16 @@
-.autocomplete-suggestion-list {
+.autocomplete-suggestion-list-wrapper {
     position: absolute;
+}
+
+.autocomplete-suggestion-list-wrapper.hidden {
+    visibility: hidden;
+}
+
+.autocomplete-suggestion-list {
     list-style-type: none;
     padding: 0;
     margin: 0;
-    z-index: 10;
-}
-
-.autocomplete-suggestion-list.hidden {
-    visibility: hidden;
+    z-index: 3000;
 }
 
 .autocomplete-suggestion-list-item {
