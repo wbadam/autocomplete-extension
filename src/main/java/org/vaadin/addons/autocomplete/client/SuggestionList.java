@@ -115,7 +115,7 @@ class SuggestionList {
         Iterator<SuggestionItem> itemIterator = items.iterator();
         suggestions.stream().limit(items.size()).forEach(
                 suggestion -> itemIterator.next()
-                        .setContent(suggestion.getValue(),
+                        .setContent(suggestion.getKey(), suggestion.getValue(),
                                 suggestion.getCaption()));
 
         // Clear the rest of the items
@@ -216,13 +216,18 @@ class SuggestionList {
         private EventListener onClick = this::onClick;
 
         /**
+         * Identifier of the suggestion item.
+         */
+        private String key;
+
+        /**
          * Value of this suggestion item. This will be set for text field when
-         * selected
+         * selected.
          */
         private String value;
 
         private SuggestionItem() {
-            setContent(null, null);
+            setContent(null, null, null);
         }
 
         private LIElement createItem() {
@@ -289,14 +294,17 @@ class SuggestionList {
         /**
          * Set content for this item.
          *
+         * @param key
+         *         Identifier for keeping track of the server side item.
          * @param value
          *         Value to be set for text field when selected.
          * @param caption
          *         Safe HTML caption to be displayed as the visible content.
          */
-        public void setContent(String value, @IsSafeHtml String caption) {
+        public void setContent(String key, String value, @IsSafeHtml String caption) {
             this.li.setInnerHTML(caption);
             this.value = value;
+            this.key = key;
 
             // Add or remove 'empty' class name
             if (isEmpty()) {
@@ -316,6 +324,15 @@ class SuggestionList {
         }
 
         /**
+         * Returns the identifier of this item.
+         *
+         * @return Identifier of this item.
+         */
+        public String getKey() {
+            return key;
+        }
+
+        /**
          * Returns the value of this item to be set for the text field when the
          * item is selected
          *
@@ -329,7 +346,7 @@ class SuggestionList {
          * Clear this item. Removes caption and value.
          */
         public void clear() {
-            setContent(null, null);
+            setContent(null, null, null);
         }
 
         /**

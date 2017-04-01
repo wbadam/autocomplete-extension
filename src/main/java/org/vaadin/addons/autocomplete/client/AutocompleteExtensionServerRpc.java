@@ -6,5 +6,5 @@ public interface AutocompleteExtensionServerRpc extends ServerRpc {
 
     public void getSuggestion(String query);
 
-    public void suggestionSelected(String value);
+    public void suggestionSelected(String key, String value);
 }

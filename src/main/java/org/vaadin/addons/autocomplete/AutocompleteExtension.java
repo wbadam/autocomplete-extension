@@ -15,7 +15,9 @@ import org.vaadin.addons.autocomplete.event.SuggestionSelectEvent;
 import org.vaadin.addons.autocomplete.event.SuggestionSelectListener;
 import org.vaadin.addons.autocomplete.generator.SuggestionGenerator;
 
+import com.vaadin.data.provider.DataKeyMapper;
 import com.vaadin.server.AbstractExtension;
+import com.vaadin.server.KeyMapper;
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.TextField;
 
@@ -47,6 +49,8 @@ public class AutocompleteExtension<T> extends AbstractExtension {
             (s, q) -> s.toString();
     private final SuggestionValueConverter<T> defaultValueConverter = T::toString;
 
+    private final DataKeyMapper<T> keyMapper = new KeyMapper<>();
+
     /**
      * Extends {@code textField} to add autocomplete functionality.
      *
@@ -57,6 +61,9 @@ public class AutocompleteExtension<T> extends AbstractExtension {
         registerRpc(new AutocompleteExtensionServerRpc() {
             @Override
             public void getSuggestion(String query) {
+
+                keyMapper.removeAll();
+
                 Optional.ofNullable(suggestionGenerator).ifPresent(generator -> {
                     // Generate suggestion list
                     List<T> suggestions = generator
@@ -74,6 +81,7 @@ public class AutocompleteExtension<T> extends AbstractExtension {
                     getRpcProxy(AutocompleteExtensionClientRpc.class)
                             .showSuggestions(suggestions.stream()
                                     .map(s -> new SuggestionData(
+                                            keyMapper.key(s),
                                             vConverter.apply(s),
                                             cConverter.apply(s, query)))
                                     .collect(Collectors.toList()), query);
@@ -81,8 +89,10 @@ public class AutocompleteExtension<T> extends AbstractExtension {
             }
 
             @Override
-            public void suggestionSelected(String value) {
-                fireEvent(new SuggestionSelectEvent(textField, value));
+            public void suggestionSelected(String key, String value) {
+                final T selectedItem = keyMapper.get(key);
+                fireEvent(new SuggestionSelectEvent<>(textField, selectedItem,
+                        value));
             }
         });
 

@@ -141,17 +141,17 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
     }
 
     private void onSuggestionSelected() {
-        final String selectedValue = suggestionList.getSelectedItem()
-                .getValue();
+        final SuggestionList.SuggestionItem selectedItem = suggestionList
+                .getSelectedItem();
 
         // Fill textfield with suggested content
-        textField.setValue(selectedValue);
+        textField.setValue(selectedItem.getValue());
 
         // Hide suggestion list
         suggestionList.hide();
 
         // Fire suggestion select event
-        rpc.suggestionSelected(selectedValue);
+        rpc.suggestionSelected(selectedItem.getKey(), selectedItem.getValue());
     }
 
     private void onInput(InputEvent event) {

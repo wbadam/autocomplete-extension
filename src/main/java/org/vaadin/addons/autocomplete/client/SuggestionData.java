@@ -10,6 +10,11 @@ import com.google.gwt.safehtml.shared.annotations.IsSafeHtml;
 public class SuggestionData implements Serializable {
 
     /**
+     * Identifier of the suggestion item.
+     */
+    private String key;
+
+    /**
      * Value of a suggestion item. This will be set as value for the text field
      * when the suggestion is selected.
      */
@@ -27,6 +32,8 @@ public class SuggestionData implements Serializable {
     /**
      * Creates a suggestion data for server-client communication.
      *
+     * @param key
+     *         Identifier of the suggestion item.
      * @param value
      *         Value of the suggestion item to be set for the text field when
      *         the suggestion is selected.
@@ -34,9 +41,18 @@ public class SuggestionData implements Serializable {
      *         Caption of the suggestion item that is visible for the user when
      *         suggestion list is shown. Can contain HTML.
      */
-    public SuggestionData(String value, String caption) {
+    public SuggestionData(String key, String value, String caption) {
+        this.key = key;
         this.value = value;
         this.caption = caption;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public void setValue(String value) {
