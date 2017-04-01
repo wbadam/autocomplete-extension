@@ -5,12 +5,14 @@ import java.util.Optional;
 
 import org.vaadin.addons.autocomplete.AutocompleteExtension;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.vaadin.client.ServerConnector;
+import com.vaadin.client.StyleConstants;
 import com.vaadin.client.annotations.OnStateChange;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.event.InputEvent;
@@ -21,6 +23,8 @@ import com.vaadin.shared.ui.Connect;
 
 @Connect(AutocompleteExtension.class)
 public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
+
+    private static final String CLASS_AUTOCOMPLETE_WRAPPER = "autocomplete-wrapper";
 
     /**
      * Timer for delaying server RPCs for requesting suggestion items.
@@ -50,7 +54,8 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         }
     }
 
-    private final SuggestionList suggestionList = new SuggestionList();
+    private final SuggestionList suggestionList;
+    private final Element wrapperElement;
 
     private final AutocompleteExtensionServerRpc rpc = RpcProxy
             .create(AutocompleteExtensionServerRpc.class, this);
@@ -62,6 +67,10 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
     private HandlerRegistration inputHandler;
 
     public AutocompleteExtensionConnector() {
+        suggestionList = new SuggestionList();
+        wrapperElement = createWrapperElement();
+        wrapperElement.appendChild(suggestionList.getElement());
+
         registerRpc(AutocompleteExtensionClientRpc.class,
                 (suggestions, query) -> {
                     // Make sure that the received suggestions are not outdated
@@ -76,6 +85,13 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
                 });
     }
 
+    private Element createWrapperElement() {
+        Element element = DOM.createDiv();
+        element.setClassName(CLASS_AUTOCOMPLETE_WRAPPER);
+        element.addClassName(StyleConstants.UI_WIDGET);
+        return element;
+    }
+
     @Override
     protected void extend(ServerConnector serverConnector) {
 
@@ -84,11 +100,16 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         suggestionList.setMaxSize(getState().suggestionListSize);
 
         textField.addAttachHandler(event -> {
+            Element textElement = textField.getElement();
+
             if (event.isAttached()) {
-                DOM.appendChild(textField.getElement().getParentElement(),
-                        suggestionList.getElement());
+                textElement.getParentElement().insertBefore(wrapperElement, textElement);
+                textElement.removeFromParent();
+                wrapperElement.insertFirst(textElement);
             } else {
-                suggestionList.getElement().removeFromParent();
+                textElement.removeFromParent();
+                wrapperElement.getParentElement().insertBefore(textElement, wrapperElement);
+                wrapperElement.removeFromParent();
             }
         });
 

@@ -1,5 +1,6 @@
 .autocomplete-suggestion-list-wrapper {
     position: absolute;
+    z-index: 3000;
 }
 
 .autocomplete-suggestion-list-wrapper.hidden {
@@ -10,7 +11,6 @@
     list-style-type: none;
     padding: 0;
     margin: 0;
-    z-index: 3000;
 }
 
 .autocomplete-suggestion-list-item {
