@@ -8,12 +8,7 @@ import org.vaadin.addonhelpers.AbstractTest;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Layout;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 public class CssLayoutAutocompleteExtensionUsageUI extends AbstractTest {
@@ -32,28 +27,6 @@ public class CssLayoutAutocompleteExtensionUsageUI extends AbstractTest {
         layout.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
 
         return layout;
-//        Layout layout = new VerticalLayout();
-//
-//        FormLayout formLayout = new FormLayout();
-//
-//        TextField textField = new TextField();
-//        new AutocompleteExtension<String>(textField)
-//                .setSuggestionGenerator(this::getSuggestions);
-//
-//        formLayout.addComponent(new Label("label1"));
-//        formLayout.addComponent(new Label("label2"));
-//        formLayout.addComponent(textField);
-//        formLayout.addComponent(new Label("label3"));
-//        formLayout.addComponent(new Label("label4"));
-//        formLayout.addComponent(new Label("label5"));
-//
-//        Panel panel = new Panel();
-//        panel.setHeight(200, Unit.PIXELS);
-//        panel.setContent(formLayout);
-//
-//        layout.addComponent(panel);
-//
-//        return layout;
     }
 
     /**
