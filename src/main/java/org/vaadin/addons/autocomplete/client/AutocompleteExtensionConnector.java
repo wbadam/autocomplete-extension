@@ -74,7 +74,8 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         registerRpc(AutocompleteExtensionClientRpc.class,
                 (suggestions, query) -> {
                     // Make sure that the received suggestions are not outdated
-                    if (Objects.equals(query, textField.getValue())) {
+                    if (Objects.equals(query, textField.getValue())
+                            && suggestions != null && suggestions.size() > 0) {
                         // Fill suggestion list with captions
                         suggestionList.fill(suggestions);
 

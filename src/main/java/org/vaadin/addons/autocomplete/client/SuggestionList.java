@@ -62,6 +62,14 @@ class SuggestionList {
      */
     private Runnable itemClickHandler;
 
+    public SuggestionList() {
+        init();
+    }
+
+    private void init() {
+        hide();
+    }
+
     private DivElement createWrapper() {
         DivElement div = Document.get().createDivElement();
         div.setClassName(CLASS_SUGGESTION_LIST_WRAPPER);

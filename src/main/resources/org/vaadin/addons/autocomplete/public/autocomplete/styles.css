@@ -1,6 +1,13 @@
 .autocomplete-suggestion-list-wrapper {
     position: absolute;
     z-index: 3000;
+
+    margin-top: 4px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-radius: 4px;
+    box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 3px 5px 0 rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.09098);
+    background-color: white;
 }
 
 .autocomplete-suggestion-list-wrapper.hidden {
@@ -10,17 +17,29 @@
 .autocomplete-suggestion-list {
     list-style-type: none;
     padding: 0;
-    margin: 0;
+    margin: 0 4px 0 4px;
+    background-color: white;
 }
 
 .autocomplete-suggestion-list-item {
     padding-left: 10px;
     padding-right: 10px;
     background-color: white;
+
+    border-radius: 4px;
 }
 
-.autocomplete-suggestion-list-item.selected, .autocomplete-suggestion-list-item:hover {
-    background-color: #F0F0F0;
+.autocomplete-suggestion-list-item:hover,
+.autocomplete-suggestion-list-item.selected,
+.autocomplete-suggestion-list-item.selected:hover,
+.autocomplete-suggestion-list:hover .autocomplete-suggestion-list-item.selected:hover {
+    background: linear-gradient(rgb(27, 134, 227), rgb(22, 110, 213));
+    color: white;
+}
+
+.autocomplete-suggestion-list:hover .autocomplete-suggestion-list-item.selected {
+    background: inherit;
+    color: inherit;
 }
 
 .autocomplete-suggestion-list-item.empty {
