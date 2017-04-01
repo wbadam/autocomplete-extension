@@ -198,7 +198,7 @@ public class AutocompleteExtension<T> extends AbstractExtension {
      * @since 0.2.0
      */
     public Registration addSuggestionSelectListener(
-            SuggestionSelectListener listener) {
+            SuggestionSelectListener<T> listener) {
         return addListener(SuggestionSelectEvent.class, listener,
                 SuggestionSelectListener.SUGGESTION_SELECT_METHOD);
     }

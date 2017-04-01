@@ -9,6 +9,8 @@ import com.vaadin.ui.TextField;
  * Server side event that is triggered when a suggestion is selected from the
  * list.
  *
+ * @param <T>
+ *         Type of the suggestion item.
  * @since 0.2.0
  */
 public class SuggestionSelectEvent<T> extends Component.Event {

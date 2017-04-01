@@ -7,10 +7,12 @@ import com.vaadin.event.SerializableEventListener;
 /**
  * Listener interface for suggestion select events.
  *
+ * @param <T>
+ *         Type of the suggestion item.
  * @since 0.2.0
  */
 @FunctionalInterface
-public interface SuggestionSelectListener extends SerializableEventListener {
+public interface SuggestionSelectListener<T> extends SerializableEventListener {
 
     static final Method SUGGESTION_SELECT_METHOD = SuggestionSelectListener.class
             .getDeclaredMethods()[0];
@@ -21,5 +23,5 @@ public interface SuggestionSelectListener extends SerializableEventListener {
      * @param event
      *         Suggestion select event.
      */
-    public void suggestionSelect(SuggestionSelectEvent event);
+    public void suggestionSelect(SuggestionSelectEvent<T> event);
 }
