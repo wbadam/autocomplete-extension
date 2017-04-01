@@ -49,7 +49,7 @@ public class AutocompleteExtension<T> extends AbstractExtension {
             (s, q) -> s.toString();
     private final SuggestionValueConverter<T> defaultValueConverter = T::toString;
 
-    private final DataKeyMapper<T> keyMapper = new KeyMapper<>();
+    private final SuggestionKeyMapper<T> keyMapper = new SuggestionKeyMapper<>();
 
     /**
      * Extends {@code textField} to add autocomplete functionality.
@@ -61,9 +61,6 @@ public class AutocompleteExtension<T> extends AbstractExtension {
         registerRpc(new AutocompleteExtensionServerRpc() {
             @Override
             public void getSuggestion(String query) {
-
-                keyMapper.removeAll();
-
                 Optional.ofNullable(suggestionGenerator).ifPresent(generator -> {
                     // Generate suggestion list
                     List<T> suggestions = generator
@@ -86,6 +83,9 @@ public class AutocompleteExtension<T> extends AbstractExtension {
                                             cConverter.apply(s, query)))
                                     .collect(Collectors.toList()), query);
                 });
+
+                // Remove oldest reference that exceed the size limit
+                keyMapper.removeOverflow();
             }
 
             @Override
@@ -95,6 +95,8 @@ public class AutocompleteExtension<T> extends AbstractExtension {
                         value));
             }
         });
+
+        keyMapper.setCacheSize(getState(false).suggestionListSize * 2);
 
         super.extend(textField);
     }
@@ -171,6 +173,8 @@ public class AutocompleteExtension<T> extends AbstractExtension {
 
         if (!Objects.equals(getState(false).suggestionListSize, size)) {
             getState().suggestionListSize = size;
+
+            keyMapper.setCacheSize(size * 2);
         }
     }
 
