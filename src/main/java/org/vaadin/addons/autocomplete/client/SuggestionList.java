@@ -151,11 +151,15 @@ class SuggestionList {
      *
      * @param width
      *         Width of suggestion list to be set.
-     * @param unit
-     *         Unit of width.
+     * @param left
+     *         Left position of suggestion list.
+     * @param top
+     *         Top position of suggestion list.
      */
-    public void show(double width, Style.Unit unit) {
-        wrapper.getStyle().setWidth(width, unit);
+    public void show(String width, String left, String top) {
+        wrapper.getStyle().setProperty("width", width);
+        wrapper.getStyle().setProperty("left", left);
+        wrapper.getStyle().setProperty("top", top);
         wrapper.removeClassName(CLASS_HIDDEN);
         visible = true;
     }
@@ -323,7 +327,8 @@ class SuggestionList {
          * @param caption
          *         Safe HTML caption to be displayed as the visible content.
          */
-        public void setContent(String key, String value, @IsSafeHtml String caption) {
+        public void setContent(String key, String value,
+                @IsSafeHtml String caption) {
             this.li.setInnerHTML(caption);
             this.value = value;
             this.key = key;

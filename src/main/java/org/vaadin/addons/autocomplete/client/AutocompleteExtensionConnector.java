@@ -6,13 +6,10 @@ import java.util.Optional;
 import org.vaadin.addons.autocomplete.AutocompleteExtension;
 
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.vaadin.client.ServerConnector;
-import com.vaadin.client.StyleConstants;
 import com.vaadin.client.annotations.OnStateChange;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.event.InputEvent;
@@ -55,7 +52,6 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
     }
 
     private final SuggestionList suggestionList;
-    private final Element wrapperElement;
 
     private final AutocompleteExtensionServerRpc rpc = RpcProxy
             .create(AutocompleteExtensionServerRpc.class, this);
@@ -68,8 +64,6 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
 
     public AutocompleteExtensionConnector() {
         suggestionList = new SuggestionList();
-        wrapperElement = createWrapperElement();
-        wrapperElement.appendChild(suggestionList.getElement());
 
         registerRpc(AutocompleteExtensionClientRpc.class,
                 (suggestions, query) -> {
@@ -80,17 +74,13 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
                         suggestionList.fill(suggestions);
 
                         // Show and set width
-                        suggestionList.show(textField.getOffsetWidth(),
-                                Style.Unit.PX);
+                        suggestionList.show(textField.getOffsetWidth() + "px",
+                                textField.getElement().getOffsetLeft() + "px",
+                                textField.getElement().getOffsetHeight()
+                                        + "px");
+
                     }
                 });
-    }
-
-    private Element createWrapperElement() {
-        Element element = DOM.createDiv();
-        element.setClassName(CLASS_AUTOCOMPLETE_WRAPPER);
-        element.addClassName(StyleConstants.UI_WIDGET);
-        return element;
     }
 
     @Override
@@ -102,15 +92,13 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
 
         textField.addAttachHandler(event -> {
             Element textElement = textField.getElement();
+            Element suggestionElement = suggestionList.getElement();
 
             if (event.isAttached()) {
-                textElement.getParentElement().insertBefore(wrapperElement, textElement);
-                textElement.removeFromParent();
-                wrapperElement.insertFirst(textElement);
+                textElement.getParentElement()
+                        .insertAfter(suggestionElement, textElement);
             } else {
-                textElement.removeFromParent();
-                wrapperElement.getParentElement().insertBefore(textElement, wrapperElement);
-                wrapperElement.removeFromParent();
+                suggestionElement.removeFromParent();
             }
         });
 
