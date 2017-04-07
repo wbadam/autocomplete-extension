@@ -151,15 +151,9 @@ class SuggestionList {
      *
      * @param width
      *         Width of suggestion list to be set.
-     * @param left
-     *         Left position of suggestion list.
-     * @param top
-     *         Top position of suggestion list.
      */
-    public void show(String width, String left, String top) {
+    public void show(String width) {
         wrapper.getStyle().setProperty("width", width);
-        wrapper.getStyle().setProperty("left", left);
-        wrapper.getStyle().setProperty("top", top);
         wrapper.removeClassName(CLASS_HIDDEN);
         visible = true;
     }
