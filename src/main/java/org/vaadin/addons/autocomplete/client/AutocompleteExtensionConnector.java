@@ -21,14 +21,13 @@ import com.vaadin.shared.ui.Connect;
 @Connect(AutocompleteExtension.class)
 public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
 
-    private static final String CLASS_AUTOCOMPLETE_WRAPPER = "autocomplete-wrapper";
-
     /**
      * Timer for delaying server RPCs for requesting suggestion items.
      */
     private static class SuggestionTimer extends Timer {
         private final AutocompleteExtensionServerRpc rpc;
         private String query;
+        private String previousQuery;
 
         SuggestionTimer(AutocompleteExtensionServerRpc rpc) {
             this.rpc = rpc;
@@ -36,17 +35,19 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
 
         @Override
         public void run() {
-            rpc.getSuggestion(query);
+            rpc.getSuggestion(query, previousQuery);
         }
 
         /**
          * Schedule calling autocomplete RPC.
          *
          * @param query
+         * @param previousQuery
          * @param delayMillis
          */
-        void schedule(String query, int delayMillis) {
+        void schedule(String query, String previousQuery, int delayMillis) {
             this.query = query;
+            this.previousQuery = previousQuery;
             schedule(delayMillis);
         }
     }
@@ -71,7 +72,7 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
                     if (Objects.equals(query, textField.getValue())
                             && suggestions != null && suggestions.size() > 0) {
                         // Fill suggestion list with captions
-                        suggestionList.fill(suggestions);
+                        suggestionList.fill(suggestions, query);
 
                         // Show and set width
                         suggestionList.show(textField.getOffsetWidth() + "px");
@@ -175,7 +176,8 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
 
     private void showSuggestionsFor(String text, int delayMillis) {
         if (Objects.nonNull(text) && !text.isEmpty()) {
-            suggestionTimer.schedule(text, delayMillis);
+            suggestionTimer
+                    .schedule(text, suggestionList.getQuery(), delayMillis);
         } else {
             suggestionTimer.cancel();
         }

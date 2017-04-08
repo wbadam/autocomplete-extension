@@ -9,6 +9,7 @@ import org.vaadin.addonhelpers.AbstractTest;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
@@ -31,7 +32,7 @@ public class DemoAutocompleteExtensionUsageUI extends AbstractTest {
                 planetField);
         planetExtension.setSuggestionGenerator(this::suggestPlanet);
         planetExtension.addSuggestionSelectListener(event -> {
-            System.out.println(event.getSelectedValue());
+            event.getSelectedItem().ifPresent(Notification::show);
         });
 
         // Users

@@ -58,6 +58,11 @@ class SuggestionList {
     private boolean visible = false;
 
     /**
+     * The current search query
+     */
+    private String query;
+
+    /**
      * Callback function for item click event
      */
     private Runnable itemClickHandler;
@@ -132,7 +137,7 @@ class SuggestionList {
      * @param suggestions
      *         List of suggestion data.
      */
-    public void fill(List<SuggestionData> suggestions) {
+    public void fill(List<SuggestionData> suggestions, String query) {
         // Fill items
         Iterator<SuggestionItem> itemIterator = items.iterator();
         suggestions.stream().limit(items.size()).forEach(
@@ -144,6 +149,9 @@ class SuggestionList {
         while (itemIterator.hasNext()) {
             itemIterator.next().clear();
         }
+
+        // Set current search term
+        this.query = query;
     }
 
     /**
@@ -174,6 +182,15 @@ class SuggestionList {
      */
     public boolean isVisible() {
         return visible;
+    }
+
+    /**
+     * Get the query that belongs to the suggestion list.
+     *
+     * @return Search query
+     */
+    public String getQuery() {
+        return query;
     }
 
     /**

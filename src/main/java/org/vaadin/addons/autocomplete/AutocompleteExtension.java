@@ -1,8 +1,13 @@
 package org.vaadin.addons.autocomplete;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.vaadin.addons.autocomplete.client.AutocompleteExtensionClientRpc;
@@ -49,7 +54,8 @@ public class AutocompleteExtension<T> extends AbstractExtension {
             (s, q) -> s.toString();
     private final SuggestionValueConverter<T> defaultValueConverter = T::toString;
 
-    private final SuggestionKeyMapper<T> keyMapper = new SuggestionKeyMapper<>();
+    private final DataKeyMapper<T> keyMapper = new KeyMapper<>();
+    private final Map<String, Set<String>> queryToKeyMap = new HashMap<>();
 
     /**
      * Extends {@code textField} to add autocomplete functionality.
@@ -60,7 +66,7 @@ public class AutocompleteExtension<T> extends AbstractExtension {
     public AutocompleteExtension(TextField textField) {
         registerRpc(new AutocompleteExtensionServerRpc() {
             @Override
-            public void getSuggestion(String query) {
+            public void getSuggestion(String query, String previousQuery) {
                 Optional.ofNullable(suggestionGenerator).ifPresent(generator -> {
                     // Generate suggestion list
                     List<T> suggestions = generator
@@ -77,15 +83,25 @@ public class AutocompleteExtension<T> extends AbstractExtension {
                     // Create a list of suggestion data and send it to the client
                     getRpcProxy(AutocompleteExtensionClientRpc.class)
                             .showSuggestions(suggestions.stream()
-                                    .map(s -> new SuggestionData(
-                                            keyMapper.key(s),
-                                            vConverter.apply(s),
-                                            cConverter.apply(s, query)))
+                                    .map(s -> convertToSuggestionData(s, query,
+                                            vConverter, cConverter))
                                     .collect(Collectors.toList()), query);
                 });
 
-                // Remove oldest reference that exceed the size limit
-                keyMapper.removeOverflow();
+                // Clear up the key mapper by removing references to old queries
+                Predicate<Map.Entry<String, Set<String>>> activeQuery = entry ->
+                        entry.getKey().equals(query) || entry.getKey()
+                                .equals(previousQuery);
+                Set<String> activeKeys = queryToKeyMap.entrySet().stream()
+                        .filter(activeQuery)
+                        .map(Map.Entry::getValue).flatMap(Set::stream)
+                        .collect(Collectors.toSet());
+
+                // Remove inactive keys
+                queryToKeyMap.values().stream().flatMap(Set::stream)
+                        .filter(k -> !activeKeys.contains(k))
+                        .forEach(k -> keyMapper.remove(keyMapper.get(k)));
+                queryToKeyMap.entrySet().removeIf(activeQuery.negate());
             }
 
             @Override
@@ -96,9 +112,23 @@ public class AutocompleteExtension<T> extends AbstractExtension {
             }
         });
 
-        keyMapper.setCacheSize(getState(false).suggestionListSize * 2);
-
         super.extend(textField);
+    }
+
+    private SuggestionData convertToSuggestionData(T item, String query,
+            SuggestionValueConverter<T> vConverter,
+            SuggestionCaptionConverter<T> cConverter) {
+
+        SuggestionData data = new SuggestionData(keyMapper.key(item),
+                vConverter.apply(item), cConverter.apply(item, query));
+
+        // Store query-key pairs in a map
+        if (!queryToKeyMap.containsKey(query)) {
+            queryToKeyMap.put(query, new HashSet<>());
+        }
+        queryToKeyMap.get(query).add(data.getKey());
+
+        return data;
     }
 
     /**
@@ -173,8 +203,6 @@ public class AutocompleteExtension<T> extends AbstractExtension {
 
         if (!Objects.equals(getState(false).suggestionListSize, size)) {
             getState().suggestionListSize = size;
-
-            keyMapper.setCacheSize(size * 2);
         }
     }
 
