@@ -76,6 +76,8 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
 
                         // Show and set width
                         suggestionList.show(textField.getOffsetWidth() + "px");
+                    } else {
+                        suggestionList.hide();
                     }
                 });
     }
