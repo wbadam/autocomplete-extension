@@ -8,8 +8,10 @@ import org.vaadin.addons.autocomplete.AutocompleteExtension;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.vaadin.client.ServerConnector;
+import com.vaadin.client.StyleConstants;
 import com.vaadin.client.annotations.OnStateChange;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.event.InputEvent;
@@ -20,6 +22,8 @@ import com.vaadin.shared.ui.Connect;
 
 @Connect(AutocompleteExtension.class)
 public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
+
+    private static final String CLASS_AUTOCOMPLETE_WRAPPER = "autocomplete-textfield";
 
     /**
      * Timer for delaying server RPCs for requesting suggestion items.
@@ -53,6 +57,7 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
     }
 
     private final SuggestionList suggestionList;
+    private final Element wrapper = createWrapper();
 
     private final AutocompleteExtensionServerRpc rpc = RpcProxy
             .create(AutocompleteExtensionServerRpc.class, this);
@@ -62,6 +67,7 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
     private VTextField textField;
 
     private HandlerRegistration inputHandler;
+    private HandlerRegistration attachHandler;
 
     public AutocompleteExtensionConnector() {
         suggestionList = new SuggestionList();
@@ -82,6 +88,13 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
                 });
     }
 
+    private Element createWrapper() {
+        Element elem = DOM.createDiv();
+        elem.addClassName(CLASS_AUTOCOMPLETE_WRAPPER);
+        elem.addClassName(StyleConstants.UI_WIDGET);
+        return elem;
+    }
+
     @Override
     protected void extend(ServerConnector serverConnector) {
 
@@ -89,15 +102,15 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
 
         suggestionList.setMaxSize(getState().suggestionListSize);
 
-        textField.addAttachHandler(event -> {
+        attachHandler = textField.addAttachHandler(event -> {
             Element textElement = textField.getElement();
-            Element suggestionElement = suggestionList.getElement();
-
             if (event.isAttached()) {
                 textElement.getParentElement()
-                        .insertAfter(suggestionElement, textElement);
+                        .insertBefore(wrapper, textElement);
+                wrapper.appendChild(textElement);
+                wrapper.appendChild(suggestionList.getElement());
             } else {
-                suggestionElement.removeFromParent();
+                wrapper.removeFromParent();
             }
         });
 
@@ -144,8 +157,17 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
     public void onUnregister() {
         super.onUnregister();
 
+        // Remove autocomplete wrapper
+        wrapper.getParentElement()
+                .insertBefore(textField.getElement(), wrapper);
+        wrapper.removeFromParent();
+
         // Remove input event listener
         Optional.ofNullable(inputHandler)
+                .ifPresent(HandlerRegistration::removeHandler);
+
+        // Remove text field attach handler
+        Optional.ofNullable(attachHandler)
                 .ifPresent(HandlerRegistration::removeHandler);
     }
 

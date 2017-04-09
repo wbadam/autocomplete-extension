@@ -46,8 +46,17 @@
     visibility: hidden;
 }
 
-/* Override border radius when rightmost element in a component group */
-.v-csslayout-v-component-group .v-widget ~ .v-widget:last-of-type {
+/* Override border radius for autocomplete wrapper in component group */
+.v-csslayout-v-component-group .v-widget ~ .autocomplete-textfield:not(:last-child) > .v-widget {
+    border-radius: 0;
+}
+
+.v-csslayout-v-component-group .autocomplete-textfield:last-child > .v-widget {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.v-csslayout-v-component-group .v-widget ~ .autocomplete-textfield:last-child > .v-widget {
     border-top-right-radius: 4px !important;
     border-bottom-right-radius: 4px !important;
 }
