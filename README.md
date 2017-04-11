@@ -36,12 +36,19 @@ Any Java object can represent a suggestion item and converters provide a caption
 ```Java
 TextField planetField = new TextField();
 
+// Apply extension and set suggestion generator
 AutocompleteExtension<String> planetExtension = new AutocompleteExtension<>(
         planetField);
 planetExtension.setSuggestionGenerator(this::suggestPlanet);
 
+// Notify when suggestion is selected
+planetExtension.addSuggestionSelectListener(event -> {
+    event.getSelectedItem().ifPresent(Notification::show);
+});
+
 // ...
 
+// Suggestion generator function, returns a list of suggestions for a user query
 private List<String> suggestPlanet(String query, int cap) {
     return DataSource.getPlanets().stream().filter(p -> p.contains(query))
         .limit(cap).collect(Collectors.toList());
