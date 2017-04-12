@@ -102,15 +102,15 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
 
         suggestionList.setMaxSize(getState().suggestionListSize);
 
+        if (textField.isAttached()) {
+            addExtensionElements();
+        }
+
         attachHandler = textField.addAttachHandler(event -> {
-            Element textElement = textField.getElement();
             if (event.isAttached()) {
-                textElement.getParentElement()
-                        .insertBefore(wrapper, textElement);
-                wrapper.appendChild(textElement);
-                wrapper.appendChild(suggestionList.getElement());
+                addExtensionElements();
             } else {
-                wrapper.removeFromParent();
+                removeExtensionElements();
             }
         });
 
@@ -157,10 +157,10 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
     public void onUnregister() {
         super.onUnregister();
 
-        // Remove autocomplete wrapper
-        wrapper.getParentElement()
-                .insertBefore(textField.getElement(), wrapper);
-        wrapper.removeFromParent();
+        // Remove autocomplete elements
+        if (textField.isAttached()) {
+            removeExtensionElements();
+        }
 
         // Remove input event listener
         Optional.ofNullable(inputHandler)
@@ -169,6 +169,19 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         // Remove text field attach handler
         Optional.ofNullable(attachHandler)
                 .ifPresent(HandlerRegistration::removeHandler);
+    }
+
+    private void addExtensionElements() {
+        Element textElement = textField.getElement();
+        textElement.getParentElement().insertBefore(wrapper, textElement);
+        wrapper.appendChild(textElement);
+        wrapper.appendChild(suggestionList.getElement());
+    }
+
+    private void removeExtensionElements() {
+        Element textElement = textField.getElement();
+        wrapper.getParentElement().insertBefore(textElement, wrapper);
+        wrapper.removeFromParent();
     }
 
     private void onSuggestionSelected() {
