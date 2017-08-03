@@ -217,6 +217,29 @@ public class AutocompleteExtension<T> extends AbstractExtension {
     }
 
     /**
+     * Triggers showing suggestions for the text field this extension extends.
+     * Calling this method will start a server round trip containing the text
+     * field's current value and will open the suggestion list with the
+     * suggestions returned by the server.
+     *
+     * @since 0.2.2
+     */
+    public void showSuggestions() {
+        getRpcProxy(AutocompleteExtensionClientRpc.class)
+                .triggerShowSuggestions();
+    }
+
+    /**
+     * Hides suggestion list for the text field extended by this extension.
+     *
+     * @since 0.2.2
+     */
+    public void hideSuggestions() {
+        getRpcProxy(AutocompleteExtensionClientRpc.class)
+                .triggerHideSuggestions();
+    }
+
+    /**
      * Add listener for suggestion select events. The event is triggered
      * whenever a suggestion item is selected by either mouse or keyboard.
      *

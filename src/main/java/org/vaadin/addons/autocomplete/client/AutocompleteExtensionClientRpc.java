@@ -16,4 +16,16 @@ public interface AutocompleteExtensionClientRpc extends ClientRpc {
      *         that the client could verify if it is still relevant.
      */
     public void showSuggestions(List<SuggestionData> suggestions, String query);
+
+    /**
+     * Requests the client to show suggestions for the text field with current
+     * value. The call will result in a server round trip to request suggestion
+     * items.
+     */
+    public void triggerShowSuggestions();
+
+    /**
+     * Requests the client to hide suggestion list.
+     */
+    public void triggerHideSuggestions();
 }

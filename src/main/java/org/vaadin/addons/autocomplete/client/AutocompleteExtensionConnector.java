@@ -1,5 +1,6 @@
 package org.vaadin.addons.autocomplete.client;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -73,16 +74,31 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
         suggestionList = new SuggestionList();
 
         registerRpc(AutocompleteExtensionClientRpc.class,
-                (suggestions, query) -> {
-                    // Make sure that the received suggestions are not outdated
-                    if (Objects.equals(query, textField.getValue())
-                            && suggestions != null && suggestions.size() > 0) {
-                        // Fill suggestion list with captions
-                        suggestionList.fill(suggestions, query);
+                new AutocompleteExtensionClientRpc() {
+                    @Override
+                    public void showSuggestions(
+                            List<SuggestionData> suggestions, String query) {
+                        if (Objects.equals(query, textField.getValue())
+                                && suggestions != null
+                                && suggestions.size() > 0) {
+                            // Fill suggestion list with captions
+                            suggestionList.fill(suggestions, query);
 
-                        // Show and set width
-                        suggestionList.show(textField.getOffsetWidth() + "px");
-                    } else {
+                            // Show and set width
+                            suggestionList
+                                    .show(textField.getOffsetWidth() + "px");
+                        } else {
+                            suggestionList.hide();
+                        }
+                    }
+
+                    @Override
+                    public void triggerShowSuggestions() {
+                        showSuggestionsFor(textField.getValue());
+                    }
+
+                    @Override
+                    public void triggerHideSuggestions() {
                         suggestionList.hide();
                     }
                 });
