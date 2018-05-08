@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.vaadin.addons</groupId>
     <artifactId>autocomplete</artifactId>
-    <version>0.2.4-SNAPSHOT</version>
+    <version>0.2.4</version>
     <packaging>bundle</packaging>
     <name>Autocomplete Extension</name>
     <organization>
@@ -25,7 +25,7 @@
         <url>https://github.com/wbadam/autocomplete-extension</url>
         <connection>scm:git:git://github.com/wbadam/autocomplete-extension.git</connection>
         <developerConnection>scm:git:ssh://git@github.com:/wbadam/autocomplete-extension.git</developerConnection>
-      <tag>HEAD</tag>
+      <tag>0.2.4</tag>
   </scm>
     <issueManagement>
         <system>GitHub</system>
