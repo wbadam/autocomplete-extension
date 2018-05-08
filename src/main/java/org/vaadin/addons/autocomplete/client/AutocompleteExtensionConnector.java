@@ -215,12 +215,7 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
     }
 
     private void onInput(InputEvent event) {
-        if (!textField.getValue().isEmpty()) {
-            showSuggestionsFor(textField.getValue(),
-                    getState().suggestionDelay);
-        } else {
-            suggestionList.hide();
-        }
+        showSuggestionsFor(textField.getValue(), getState().suggestionDelay);
     }
 
     private void showSuggestionsFor(String text) {
@@ -228,12 +223,7 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
     }
 
     private void showSuggestionsFor(String text, int delayMillis) {
-        if (Objects.nonNull(text) && !text.isEmpty()) {
-            suggestionTimer
-                    .schedule(text, suggestionList.getQuery(), delayMillis);
-        } else {
-            suggestionTimer.cancel();
-        }
+        suggestionTimer.schedule(text, suggestionList.getQuery(), delayMillis);
     }
 
     private void selectNextItem() {

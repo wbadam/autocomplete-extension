@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.text.WordUtils;
 import org.vaadin.addonhelpers.AbstractTest;
 
+import com.google.common.base.Strings;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
@@ -61,9 +62,10 @@ public class DemoAutocompleteExtensionUsageUI extends AbstractTest {
     }
 
     private List<DataSource.User> suggestUsers(String query, int cap) {
-        return DataSource.getUsers().stream()
-                .filter(user -> user.getName().contains(query.toLowerCase()))
-                .limit(cap).collect(Collectors.toList());
+        return Strings.isNullOrEmpty(query) ? null :
+                DataSource.getUsers().stream().filter(user -> user.getName()
+                        .contains(query.toLowerCase())).limit(cap)
+                        .collect(Collectors.toList());
     }
 
     private String convertValueUser(DataSource.User user) {
