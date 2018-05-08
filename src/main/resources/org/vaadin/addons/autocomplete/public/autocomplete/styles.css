@@ -46,6 +46,10 @@
     visibility: hidden;
 }
 
+.autocomplete-textfield.v-widget {
+    width: inherit;
+}
+
 /* Override border radius for autocomplete wrapper in component group */
 .v-csslayout-v-component-group .v-widget ~ .autocomplete-textfield:not(:last-child) > .v-widget {
     border-radius: 0;
