@@ -1,5 +1,6 @@
 package org.vaadin.addons.autocomplete;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -82,9 +83,10 @@ public class AutocompleteExtension<T> extends AbstractExtension {
 
                     // Create a list of suggestion data and send it to the client
                     getRpcProxy(AutocompleteExtensionClientRpc.class)
-                            .showSuggestions(suggestions.stream()
-                                    .map(s -> convertToSuggestionData(s, query,
-                                            vConverter, cConverter))
+                            .showSuggestions(Optional.ofNullable(suggestions)
+                                    .orElse(Collections.emptyList()).stream()
+                                    .map(s -> convertToSuggestionData(s,
+                                            query, vConverter, cConverter))
                                     .collect(Collectors.toList()), query);
                 });
 
