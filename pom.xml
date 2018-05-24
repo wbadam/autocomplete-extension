@@ -210,10 +210,6 @@
             <id>directorypackage</id>
             <build>
                 <plugins>
-                    <!-- build javadocs during development builds as well to
-             show javadoc syntax issues before release. Remove this
-             to speed up the build a bit.
-            -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
@@ -223,6 +219,10 @@
                                 <goals>
                                     <goal>jar</goal>
                                 </goals>
+                                <configuration>
+                                    <!-- Avoid build errors due to Javadoc -->
+                                    <doclint>none</doclint>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
