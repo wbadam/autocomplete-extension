@@ -90,6 +90,8 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
                         } else {
                             suggestionList.hide();
                         }
+
+                        wrapper.removeClassName("autocomplete-loading");
                     }
 
                     @Override
@@ -223,6 +225,11 @@ public class AutocompleteExtensionConnector extends AbstractExtensionConnector {
     }
 
     private void showSuggestionsFor(String text, int delayMillis) {
+        if (text.equals("")) {
+            wrapper.removeClassName("autocomplete-loading");
+        } else {
+            wrapper.addClassName("autocomplete-loading");
+        }
         suggestionTimer.schedule(text, suggestionList.getQuery(), delayMillis);
     }
 
